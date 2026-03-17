@@ -3860,6 +3860,12 @@ export const minimaxOperations: INodeProperties = {
 		{ name: 'Get Video Job', value: 'getVideoJob', description: 'Get video job status', action: 'Get video job' },
 		{ name: 'Get Image Job', value: 'getImageJob', description: 'Get image job status', action: 'Get image job' },
 		{ name: 'List Accounts', value: 'listAccounts', description: 'List all MiniMax accounts', action: 'List accounts' },
+		{ name: 'Add Account', value: 'addAccount', description: 'Add a MiniMax (Hailuo AI) account', action: 'Add account' },
+		{ name: 'Delete Account', value: 'deleteAccount', description: 'Delete a MiniMax account', action: 'Delete account' },
+		{ name: 'Cancel Video', value: 'cancelVideo', description: 'Cancel a running video job', action: 'Cancel video' },
+		{ name: 'List Agent Templates', value: 'listAgentTemplates', description: 'List available agent templates', action: 'List agent templates' },
+		{ name: 'List Characters', value: 'listCharacters', description: 'List available characters', action: 'List characters' },
+		{ name: 'Upload File', value: 'uploadFile', description: 'Upload a file for use in generation', action: 'Upload file' },
 	],
 	default: 'createVideo',
 };
@@ -4083,6 +4089,76 @@ export const minimaxFields: INodeProperties[] = [
 		description: 'The image job ID to retrieve',
 		displayOptions: { show: { resource: ['minimax'], operation: ['getImageJob'] } },
 	},
+
+	// addAccount (minimax)
+	{
+		displayName: 'URL',
+		name: 'mmAccountUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Hailuo AI cursor URL',
+		displayOptions: { show: { resource: ['minimax'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Token',
+		name: 'mmAccountToken',
+		type: 'string',
+		typeOptions: { password: true },
+		required: true,
+		default: '',
+		description: 'Hailuo AI session token',
+		displayOptions: { show: { resource: ['minimax'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Jobs',
+		name: 'mmAccountMaxJobs',
+		type: 'number',
+		default: 3,
+		description: 'Maximum concurrent jobs',
+		displayOptions: { show: { resource: ['minimax'], operation: ['addAccount'] } },
+	},
+
+	// deleteAccount (minimax)
+	{
+		displayName: 'Account',
+		name: 'mmAccountId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Account ID to delete',
+		displayOptions: { show: { resource: ['minimax'], operation: ['deleteAccount'] } },
+	},
+
+	// cancelVideo (minimax)
+	{
+		displayName: 'Video ID',
+		name: 'mmCancelVideoId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The video job ID to cancel',
+		displayOptions: { show: { resource: ['minimax'], operation: ['cancelVideo'] } },
+	},
+
+	// uploadFile (minimax)
+	{
+		displayName: 'File URL',
+		name: 'mmFileUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'URL of file to upload',
+		displayOptions: { show: { resource: ['minimax'], operation: ['uploadFile'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific MiniMax account to use',
+		displayOptions: { show: { resource: ['minimax'], operation: ['uploadFile'] } },
+	},
 ];
 
 // ──────────────────────────────────────────────────────────────
@@ -4103,6 +4179,16 @@ export const murekaOperations: INodeProperties = {
 		{ name: 'Text to Speech', value: 'textToSpeech', description: 'Convert text to speech', action: 'Text to speech' },
 		{ name: 'List Voices', value: 'listVoices', description: 'List available TTS voices', action: 'List voices' },
 		{ name: 'List Moods and Genres', value: 'listMoodsGenres', description: 'List available moods and genres', action: 'List moods and genres' },
+		{ name: 'Add Account', value: 'addAccount', description: 'Add a Mureka account', action: 'Add account' },
+		{ name: 'Get Account', value: 'getAccount', description: 'Get a Mureka account', action: 'Get account' },
+		{ name: 'List Accounts', value: 'listAccounts', description: 'List all Mureka accounts', action: 'List accounts' },
+		{ name: 'Delete Account', value: 'deleteAccount', description: 'Delete a Mureka account', action: 'Delete account' },
+		{ name: 'Get Song', value: 'getSong', description: 'Get song details', action: 'Get song' },
+		{ name: 'List Songs', value: 'listSongs', description: 'List songs', action: 'List songs' },
+		{ name: 'Delete Song', value: 'deleteSong', description: 'Delete a song', action: 'Delete song' },
+		{ name: 'Download Song', value: 'downloadSong', description: 'Download a completed song', action: 'Download song' },
+		{ name: 'Extend Song', value: 'extendSong', description: 'Extend a song', action: 'Extend song' },
+		{ name: 'Generate Music Video', value: 'generateMusicVideo', description: 'Generate a music video from a song', action: 'Generate music video' },
 	],
 	default: 'createSong',
 };
@@ -4350,6 +4436,155 @@ export const murekaFields: INodeProperties[] = [
 		default: true,
 		description: 'Whether to poll until the job completes',
 		displayOptions: { show: { resource: ['mureka'], operation: ['textToSpeech'] } },
+	},
+
+	// addAccount (mureka)
+	{
+		displayName: 'Token',
+		name: 'murekaAccountToken',
+		type: 'string',
+		typeOptions: { password: true },
+		required: true,
+		default: '',
+		description: 'Mureka auth token',
+		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Jobs',
+		name: 'murekaAccountMaxJobs',
+		type: 'number',
+		default: 0,
+		description: 'Maximum concurrent jobs (0 = default)',
+		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
+	},
+
+	// getAccount / deleteAccount (mureka)
+	{
+		displayName: 'Account',
+		name: 'murekaAccountId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Mureka account ID',
+		displayOptions: { show: { resource: ['mureka'], operation: ['getAccount', 'deleteAccount'] } },
+	},
+
+	// listSongs filter
+	{
+		displayName: 'Account',
+		name: 'murekaSongsAccount',
+		type: 'string',
+		default: '',
+		description: 'Filter by account',
+		displayOptions: { show: { resource: ['mureka'], operation: ['listSongs'] } },
+	},
+
+	// getSong / deleteSong
+	{
+		displayName: 'Song ID',
+		name: 'murekaSongId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The song ID',
+		displayOptions: { show: { resource: ['mureka'], operation: ['getSong', 'deleteSong'] } },
+	},
+
+	// downloadSong
+	{
+		displayName: 'Song ID',
+		name: 'murekaDownloadSongId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The song ID to download',
+		displayOptions: { show: { resource: ['mureka'], operation: ['downloadSong'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific Mureka account to use',
+		displayOptions: { show: { resource: ['mureka'], operation: ['downloadSong'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the download completes',
+		displayOptions: { show: { resource: ['mureka'], operation: ['downloadSong'] } },
+	},
+
+	// extendSong
+	{
+		displayName: 'Song ID',
+		name: 'murekaExtendSongId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The song ID to extend',
+		displayOptions: { show: { resource: ['mureka'], operation: ['extendSong'] } },
+	},
+	{
+		displayName: 'Prompt',
+		name: 'murekaExtendPrompt',
+		type: 'string',
+		default: '',
+		description: 'Optional prompt for extension',
+		displayOptions: { show: { resource: ['mureka'], operation: ['extendSong'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific Mureka account to use',
+		displayOptions: { show: { resource: ['mureka'], operation: ['extendSong'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the extension completes',
+		displayOptions: { show: { resource: ['mureka'], operation: ['extendSong'] } },
+	},
+
+	// generateMusicVideo
+	{
+		displayName: 'Song ID',
+		name: 'murekaVideoSongId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The song ID to generate video for',
+		displayOptions: { show: { resource: ['mureka'], operation: ['generateMusicVideo'] } },
+	},
+	{
+		displayName: 'Style',
+		name: 'murekaVideoStyle',
+		type: 'string',
+		default: '',
+		description: 'Visual style for the music video',
+		displayOptions: { show: { resource: ['mureka'], operation: ['generateMusicVideo'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific Mureka account to use',
+		displayOptions: { show: { resource: ['mureka'], operation: ['generateMusicVideo'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the video generation completes',
+		displayOptions: { show: { resource: ['mureka'], operation: ['generateMusicVideo'] } },
 	},
 ];
 

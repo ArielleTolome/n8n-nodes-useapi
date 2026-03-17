@@ -1488,6 +1488,42 @@ async function executeMinimax(
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
 	}
 
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			url: this.getNodeParameter('mmAccountUrl', i) as string,
+			token: this.getNodeParameter('mmAccountToken', i) as string,
+		};
+		const maxJobs = this.getNodeParameter('mmAccountMaxJobs', i, 3) as number;
+		if (maxJobs) body.maxJobs = maxJobs;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'deleteAccount') {
+		const account = this.getNodeParameter('mmAccountId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${account}`);
+	}
+
+	if (operation === 'cancelVideo') {
+		const videoId = this.getNodeParameter('mmCancelVideoId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/videos/${videoId}`);
+	}
+
+	if (operation === 'listAgentTemplates') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/agent/templates`);
+	}
+
+	if (operation === 'listCharacters') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/videos/characters`);
+	}
+
+	if (operation === 'uploadFile') {
+		const body: Record<string, any> = {
+			fileUrl: this.getNodeParameter('mmFileUrl', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/files`, body);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown MiniMax operation: ${operation}`, {
 		itemIndex: i,
 	});
@@ -1767,6 +1803,80 @@ async function executeMureka(
 
 	if (operation === 'listMoodsGenres') {
 		return await useApiRequest.call(this, 'GET', `${basePath}/music/moods-and-genres`);
+	}
+
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			token: this.getNodeParameter('murekaAccountToken', i) as string,
+		};
+		const maxJobs = this.getNodeParameter('murekaAccountMaxJobs', i, 0) as number;
+		if (maxJobs) body.maxJobs = maxJobs;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const account = this.getNodeParameter('murekaAccountId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${account}`);
+	}
+
+	if (operation === 'listAccounts') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const account = this.getNodeParameter('murekaAccountId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${account}`);
+	}
+
+	if (operation === 'getSong') {
+		const songId = this.getNodeParameter('murekaSongId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/${songId}`);
+	}
+
+	if (operation === 'listSongs') {
+		const qs: Record<string, any> = {};
+		const account = this.getNodeParameter('murekaSongsAccount', i, '') as string;
+		if (account) qs.account = account;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music`, {}, qs);
+	}
+
+	if (operation === 'deleteSong') {
+		const songId = this.getNodeParameter('murekaSongId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/music/${songId}`);
+	}
+
+	if (operation === 'downloadSong') {
+		const body: Record<string, any> = {
+			songId: this.getNodeParameter('murekaDownloadSongId', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/music/download`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const jobId = response.job_id || response.jobId || response.jobid;
+		if (wait && jobId) {
+			return await waitForJob.call(this, `${basePath}/jobs/${jobId}`);
+		}
+		return response;
+	}
+
+	if (operation === 'extendSong') {
+		const body: Record<string, any> = {
+			songId: this.getNodeParameter('murekaExtendSongId', i) as string,
+		};
+		const prompt = this.getNodeParameter('murekaExtendPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/music/extend`, body);
+	}
+
+	if (operation === 'generateMusicVideo') {
+		const body: Record<string, any> = {
+			songId: this.getNodeParameter('murekaVideoSongId', i) as string,
+		};
+		const style = this.getNodeParameter('murekaVideoStyle', i, '') as string;
+		if (style) body.style = style;
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/music/video-generate`, body);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown Mureka operation: ${operation}`, {
