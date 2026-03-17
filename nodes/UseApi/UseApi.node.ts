@@ -1,4 +1,5 @@
 import type {
+	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
@@ -6,7 +7,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
-import { useApiRequest, waitForJob } from './GenericFunctions';
+import { useApiRequest, waitForJob, useApiBinaryUpload } from './GenericFunctions';
 import {
 	resourceField,
 	midjourneyOperations,
@@ -284,7 +285,7 @@ async function executeMidjourney(
 
 	if (operation === 'describe') {
 		const body: Record<string, any> = {};
-		addOptionalField(this, body, 'url', i);
+		addOptionalField(this, body, 'url', i, 'imageUrl');
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -1827,11 +1828,11 @@ async function executeMinimax(
 	}
 
 	if (operation === 'uploadFile') {
-		const body: Record<string, any> = {
-			fileUrl: this.getNodeParameter('mmFileUrl', i) as string,
-		};
-		addOptionalField(this, body, 'account', i);
-		return await useApiRequest.call(this, 'POST', `${basePath}/files`, body);
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const qs: IDataObject = {};
+		const account = this.getNodeParameter('account', i, '') as string;
+		if (account) qs.account = account;
+		return await useApiBinaryUpload.call(this, `${basePath}/files/`, binaryPropertyName, i, qs);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown MiniMax operation: ${operation}`, {
@@ -2335,14 +2336,11 @@ async function executeTempolor(
 	}
 
 	if (operation === 'splitStems') {
-		const body: Record<string, any> = {
-			audioUrl: this.getNodeParameter('audioUrl', i) as string,
-		};
-		addOptionalField(this, body, 'account', i);
-		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
-		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
-		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
-		return await temporlorPostAndPoll(`${basePath}/music/stems-splitter`, body);
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const qs: IDataObject = {};
+		const account = this.getNodeParameter('account', i, '') as string;
+		if (account) qs.user_id = account;
+		return await useApiBinaryUpload.call(this, `${basePath}/music/stems-splitter/`, binaryPropertyName, i, qs);
 	}
 
 	if (operation === 'getSong') {
@@ -2388,11 +2386,12 @@ async function executeTempolor(
 	}
 
 	if (operation === 'uploadMidi') {
-		const body: Record<string, any> = {
-			midiUrl: this.getNodeParameter('tpMidiUrl', i) as string,
-		};
-		addOptionalField(this, body, 'account', i);
-		return await useApiRequest.call(this, 'POST', `${basePath}/music/midi`, body);
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const midiName = this.getNodeParameter('tpMidiName', i) as string;
+		const qs: IDataObject = { name: midiName };
+		const account = this.getNodeParameter('account', i, '') as string;
+		if (account) qs.user_id = account;
+		return await useApiBinaryUpload.call(this, `${basePath}/music/midi/`, binaryPropertyName, i, qs);
 	}
 
 	if (operation === 'listMidi') {
@@ -2405,12 +2404,12 @@ async function executeTempolor(
 	}
 
 	if (operation === 'cloneVoice') {
-		const body: Record<string, any> = {
-			audioUrl: this.getNodeParameter('tpCloneAudioUrl', i) as string,
-			name: this.getNodeParameter('tpCloneVoiceName', i) as string,
-		};
-		addOptionalField(this, body, 'account', i);
-		return await useApiRequest.call(this, 'POST', `${basePath}/music/cloned-voices`, body);
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const voiceName = this.getNodeParameter('tpCloneVoiceName', i) as string;
+		const qs: IDataObject = { name: voiceName };
+		const account = this.getNodeParameter('account', i, '') as string;
+		if (account) qs.user_id = account;
+		return await useApiBinaryUpload.call(this, `${basePath}/music/cloned-voices/`, binaryPropertyName, i, qs);
 	}
 
 	if (operation === 'listClonedVoices') {

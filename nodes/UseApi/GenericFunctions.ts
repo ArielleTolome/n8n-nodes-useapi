@@ -10,6 +10,50 @@ import type {
 import { NodeApiError } from 'n8n-workflow';
 
 /**
+ * Posts a binary file to the useapi.net API using raw binary body.
+ * Used for endpoints that accept file uploads (MiniMax /files, TemPolor /midi, etc.)
+ *
+ * @param endpoint - API endpoint path (e.g. "/minimax/files/")
+ * @param binaryPropertyName - n8n binary property name (e.g. "data")
+ * @param i - Item index
+ * @param qs - Query string parameters (e.g. { account: "...", name: "..." })
+ * @returns The parsed JSON response from the API
+ */
+export async function useApiBinaryUpload(
+	this: IExecuteFunctions,
+	endpoint: string,
+	binaryPropertyName: string,
+	i: number,
+	qs: IDataObject = {},
+): Promise<IDataObject> {
+	const credentials = await this.getCredentials('useApiCredentials');
+	const baseUrl = credentials.baseUrl as string;
+
+	const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+	const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+
+	// Build query string
+	const qsPairs = Object.entries(qs).filter(([, v]) => v !== undefined && v !== '' && v !== null);
+	const qsSuffix = qsPairs.length > 0
+		? '?' + qsPairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`).join('&')
+		: '';
+
+	try {
+		return (await this.helpers.httpRequest({
+			method: 'POST',
+			url: `${baseUrl}${endpoint}${qsSuffix}`,
+			headers: {
+				Authorization: `Bearer ${credentials.apiToken}`,
+				'Content-Type': binaryData.mimeType || 'application/octet-stream',
+			},
+			body: buffer,
+		})) as IDataObject;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error as JsonObject);
+	}
+}
+
+/**
  * Makes an authenticated request to the useapi.net API.
  *
  * @param method - HTTP method (GET, POST, DELETE, etc.)

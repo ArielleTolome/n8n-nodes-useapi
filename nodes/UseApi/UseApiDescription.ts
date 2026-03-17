@@ -5075,12 +5075,12 @@ export const minimaxFields: INodeProperties[] = [
 
 	// uploadFile (minimax)
 	{
-		displayName: 'File URL',
-		name: 'mmFileUrl',
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
 		type: 'string',
 		required: true,
-		default: '',
-		description: 'URL of file to upload',
+		default: 'data',
+		description: 'Name of the binary property containing the image file to upload (PNG or JPEG, up to 5 GB)',
 		displayOptions: { show: { resource: ['minimax'], operation: ['uploadFile'] } },
 	},
 	{
@@ -6917,12 +6917,12 @@ export const temporlorFields: INodeProperties[] = [
 
 	// splitStems
 	{
-		displayName: 'Audio URL',
-		name: 'audioUrl',
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
 		type: 'string',
 		required: true,
-		default: '',
-		description: 'URL of the audio file to split into stems',
+		default: 'data',
+		description: 'Name of the binary property containing the audio file to split into stems (MP3, WAV, M4A, or FLAC)',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
 	},
 	{
@@ -6930,39 +6930,8 @@ export const temporlorFields: INodeProperties[] = [
 		name: 'account',
 		type: 'string',
 		default: '',
-		description: 'Specific TemPolor account to use',
+		description: 'Specific TemPolor account user ID to use',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
-	},
-	{
-		displayName: 'Wait for Completion',
-		name: 'waitForCompletion',
-		type: 'boolean',
-		default: true,
-		description: 'Whether to poll until the job completes',
-		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
-	},
-	{
-		displayName: 'Captcha Token',
-		name: 'tp_captchaToken',
-		type: 'string',
-		default: '',
-		description: 'Your reCAPTCHA v3 Enterprise token (leave empty to let useapi.net handle it)',
-		displayOptions: { show: { resource: ['tempolor'], operation: ["splitStems"] } },
-	},
-	{
-		displayName: 'Captcha Retry',
-		name: 'tp_captchaRetry',
-		type: 'number',
-		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
-		displayOptions: { show: { resource: ['tempolor'], operation: ["splitStems"] } },
-	},
-	{
-		displayName: 'Captcha Order',
-		name: 'tp_captchaOrder',
-		type: 'string',
-		default: '',
-		displayOptions: { show: { resource: ['tempolor'], operation: ["splitStems"] } },
 	},
 
 	// getSong
@@ -7031,12 +7000,21 @@ export const temporlorFields: INodeProperties[] = [
 
 	// uploadMidi
 	{
-		displayName: 'MIDI URL',
-		name: 'tpMidiUrl',
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
+		type: 'string',
+		required: true,
+		default: 'data',
+		description: 'Name of the binary property containing the MIDI file to upload (Content-Type must be audio/midi or audio/x-midi)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['uploadMidi'] } },
+	},
+	{
+		displayName: 'MIDI Name',
+		name: 'tpMidiName',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'URL of MIDI file to upload',
+		description: 'Name to assign to the uploaded MIDI file',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['uploadMidi'] } },
 	},
 	{
@@ -7044,7 +7022,7 @@ export const temporlorFields: INodeProperties[] = [
 		name: 'account',
 		type: 'string',
 		default: '',
-		description: 'Specific TemPolor account to use',
+		description: 'Specific TemPolor account user ID to use',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['uploadMidi'] } },
 	},
 
@@ -7061,21 +7039,21 @@ export const temporlorFields: INodeProperties[] = [
 
 	// cloneVoice
 	{
-		displayName: 'Audio URL',
-		name: 'tpCloneAudioUrl',
+		displayName: 'Input Binary Field',
+		name: 'binaryPropertyName',
 		type: 'string',
 		required: true,
-		default: '',
-		description: 'URL of voice sample to clone from',
+		default: 'data',
+		description: 'Name of the binary property containing the voice audio sample (M4A, MP3, WAV, or FLAC)',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
 	},
 	{
-		displayName: 'Name',
+		displayName: 'Voice Name',
 		name: 'tpCloneVoiceName',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Name for the cloned voice',
+		description: 'Name to assign to the cloned voice',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
 	},
 	{
@@ -7083,7 +7061,7 @@ export const temporlorFields: INodeProperties[] = [
 		name: 'account',
 		type: 'string',
 		default: '',
-		description: 'Specific TemPolor account to use',
+		description: 'Specific TemPolor account user ID to use',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
 	},
 
