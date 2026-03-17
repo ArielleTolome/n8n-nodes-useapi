@@ -10,3 +10,5 @@ gulpfile.js
 node_modules/
 .git/
 .gitignore
+__tests__/
+jest.config.*

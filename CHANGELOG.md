@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 Format: [Semantic Versioning](https://semver.org/)
 
+## [0.5.9] - 2026-03-17
+### Validated
+- All 5 example workflow JSON files confirmed valid for n8n import (correct types, required fields, proper UUIDs)
+- `n8n-nodes-useapi.useApi` type string verified correct in all examples
+### Added
+- SUMMARY.md — comprehensive package documentation for first-time discovery
+
 ## [0.5.7] - 2026-03-17
 ### Added
 - 4 additional importable n8n workflow example templates: Kling image-to-video, Runway video generation, PixVerse video creation, MiniMax video creation

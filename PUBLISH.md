@@ -54,6 +54,33 @@ To comply:
      contents: read
    ```
 
+---
+
+## npm Provenance (Required by May 1, 2026)
+
+For n8n verified node status, npm packages must be published with provenance attestation.
+
+### Setup
+
+1. Ensure `NPM_TOKEN` is set in GitHub repo secrets:
+   - Go to **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `NPM_TOKEN`
+   - Value: your npm access token (generate at npmjs.com → Access Tokens → Granular or Classic)
+2. The release workflow (`.github/workflows/release.yml`) already includes `--provenance` and `permissions: id-token: write`
+3. On each `git tag v*` push, GitHub Actions will publish with provenance automatically
+
+### How `permissions: id-token: write` works
+
+This grants the GitHub Actions workflow an OIDC (OpenID Connect) token. npm uses this token to cryptographically link the published package to the specific GitHub Actions run that produced it — creating a verifiable chain of custody between source code and published artifact.
+
+### Manual publish with provenance (one-time backfill)
+
+```bash
+npm publish --access public --provenance
+```
+
+> **Note:** Manual provenance requires running from a GitHub Actions environment where the OIDC token is available. For local publish without provenance, use `npm publish --access public`.
+
 #### Submission Steps
 
 1. Ensure all requirements above are met
