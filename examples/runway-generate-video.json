@@ -1,0 +1,74 @@
+{
+  "name": "UseAPI - Runway Generate Video",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f6a7b8c9-0006-0006-0006-000000000001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "runway",
+        "operation": "createVideo",
+        "model": "gen4.5",
+        "prompt": "A cinematic shot of a futuristic car",
+        "quality": "720p",
+        "waitForCompletion": true
+      },
+      "id": "f6a7b8c9-0006-0006-0006-000000000002",
+      "name": "UseAPI",
+      "type": "n8n-nodes-useapi.useApi",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "useApiCredentialsApi": {
+          "id": "1",
+          "name": "UseAPI Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "f6a7b8c9-0006-0006-0006-000000000003",
+      "name": "NoOp",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "UseAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UseAPI": {
+      "main": [
+        [
+          {
+            "node": "NoOp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}

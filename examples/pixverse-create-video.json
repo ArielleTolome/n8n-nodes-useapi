@@ -1,0 +1,74 @@
+{
+  "name": "UseAPI - PixVerse Create Video",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a7b8c9d0-0007-0007-0007-000000000001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "pixverse",
+        "operation": "createVideo",
+        "prompt": "A butterfly emerging from a cocoon",
+        "duration": 5,
+        "quality": "540p",
+        "waitForCompletion": true
+      },
+      "id": "a7b8c9d0-0007-0007-0007-000000000002",
+      "name": "UseAPI",
+      "type": "n8n-nodes-useapi.useApi",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "useApiCredentialsApi": {
+          "id": "1",
+          "name": "UseAPI Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "a7b8c9d0-0007-0007-0007-000000000003",
+      "name": "NoOp",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "UseAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UseAPI": {
+      "main": [
+        [
+          {
+            "node": "NoOp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {}
+}
