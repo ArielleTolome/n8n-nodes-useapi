@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-useapi",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "n8n community nodes for useapi.net - AI services API (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)",
   "keywords": [
     "n8n-community-node-package",
@@ -82,7 +82,14 @@
       "^n8n-workflow$": "<rootDir>/node_modules/n8n-workflow"
     },
     "transform": {
-      "^.+\\.tsx?$": ["ts-jest", { "tsconfig": { "strict": false } }]
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": {
+            "strict": false
+          }
+        }
+      ]
     }
   },
   "publishConfig": {

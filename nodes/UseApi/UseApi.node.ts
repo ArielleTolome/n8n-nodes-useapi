@@ -206,7 +206,7 @@ async function runwayTaskPoll(
 	const response = await useApiRequest.call(ctx, 'POST', endpoint, body);
 	const wait = ctx.getNodeParameter('waitForCompletion', i, true) as boolean;
 	if (!wait) return response;
-	const taskId = (response.taskId || response.task?.taskId) as string | undefined;
+	const taskId = (response.taskId || (response.task as IDataObject | undefined)?.taskId) as string | undefined;
 	if (!taskId) return response;
 	const pollEndpoint = `${basePath}/tasks/${taskId}`;
 	const startTime = Date.now();
@@ -214,10 +214,10 @@ async function runwayTaskPoll(
 	const maxWaitMs = 300000;
 	while (Date.now() - startTime < maxWaitMs) {
 		const poll = await useApiRequest.call(ctx, 'GET', pollEndpoint);
-		const status = (poll.status || poll.task?.status || '') as string;
+		const status = (poll.status || (poll.task as IDataObject | undefined)?.status || '') as string;
 		if (status === 'SUCCEEDED' || status === 'completed') return poll;
 		if (status === 'FAILED' || status === 'failed' || status === 'error') {
-			const errMsg = JSON.stringify(poll.error || poll.task?.error || 'Task failed');
+			const errMsg = JSON.stringify(poll.error || (poll.task as IDataObject | undefined)?.error || 'Task failed');
 			throw new NodeOperationError(ctx.getNode(), `Runway task failed: ${errMsg}`);
 		}
 		await new Promise((resolve) => setTimeout(resolve, intervalMs));
