@@ -539,6 +539,7 @@ async function executeKling(
 			duration: this.getNodeParameter('duration', i) as string,
 		};
 		addOptionalField(this, body, 'negative_prompt', i);
+		addOptionalBool(this, body, 'enable_audio', i);
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
@@ -561,6 +562,7 @@ async function executeKling(
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalField(this, body, 'tail_image_url', i);
+		addOptionalBool(this, body, 'enable_audio', i);
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);

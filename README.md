@@ -89,8 +89,9 @@ Operations: Text to Video, Image to Video, Image to Video Effects, Extend Video,
 
 Key parameters (Video generation):
 - `prompt`, `imageUrl`, `endImageUrl`
-- `model` — Kling model version (1.6, 2.0, 2.1 series)
-- `duration` — 5 or 10 seconds
+- `model` — Kling V3 (default), O1, V2.6, V2.5, V2.1, V2.0, V1.6, V1.5
+- `duration` — 5, 10, or 15 seconds (15s available for Kling V3)
+- `enableAudio` — add native audio/sound effects to video
 - `aspectRatio`
 - `seed`
 - `negativePrompt`
@@ -257,6 +258,8 @@ For immediate fire-and-forget without polling, use the **Async** toggle (where s
 
 | Version | Changes |
 |---------|---------|
+| v0.4.7 | Kling: add 15s duration + `enable_audio` field (T2V/I2V), default model → kling-v3; MiniMax: add T2V-2.3, I2V-2.3, I2V-2.3-Fast, Veo-3.1, Veo-3.1-Fast models |
+| v0.4.6 | ESLint fix + UX polish (placeholder text, description improvements across resources) |
 | v0.4.5 | Update README with complete field documentation and changelog |
 | v0.4.4 | Final gap-fill — Midjourney sref/cref fields, PixVerse modifyVideo negativePrompt, execute logic verification across all resources |
 | v0.4.3 | Add async field to all generation operations + fill remaining model-specific parameter gaps |
