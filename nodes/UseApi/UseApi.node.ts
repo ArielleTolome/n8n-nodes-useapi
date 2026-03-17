@@ -655,15 +655,23 @@ async function executeRunway(
 
 	if (operation === 'createVideo') {
 		const body: Record<string, any> = {
-			prompt: this.getNodeParameter('prompt', i) as string,
 			model: this.getNodeParameter('model', i) as string,
-			ratio: this.getNodeParameter('ratio', i) as string,
-			duration: this.getNodeParameter('duration', i) as number,
 		};
-		addOptionalField(this, body, 'image_url', i);
+		const textPrompt = this.getNodeParameter('prompt', i) as string;
+		if (textPrompt) body.text_prompt = textPrompt;
+		const aspectRatio = this.getNodeParameter('ratio', i) as string;
+		if (aspectRatio) body.aspect_ratio = aspectRatio;
+		const duration = this.getNodeParameter('duration', i) as number;
+		if (duration) body.duration = duration;
+		addOptionalField(this, body, 'resolution', i);
+		addOptionalField(this, body, 'imageAssetId1', i);
+		addOptionalField(this, body, 'imageAssetId2', i);
+		addOptionalField(this, body, 'videoAssetId', i);
+		// audio: always send when false to explicitly disable (default is true)
+		body.audio = this.getNodeParameter('audio', i, true) as boolean;
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'exploreMode', i);
-		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'account', i, 'email');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create`, body, `${basePath}/videos`);
 	}
 
