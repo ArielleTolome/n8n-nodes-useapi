@@ -6,6 +6,12 @@ n8n community nodes for [useapi.net](https://useapi.net) — a unified REST API 
 
 ---
 
+## Examples
+
+Import ready-to-use workflow templates from the [`examples/`](./examples/) directory directly into n8n.
+
+---
+
 ## Installation
 
 ### GitHub Install (Recommended)

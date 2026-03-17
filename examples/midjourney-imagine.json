@@ -1,0 +1,73 @@
+{
+  "name": "Midjourney Imagine Example",
+  "nodes": [
+    {
+      "id": "b2c3d4e5-0001-4000-8000-000000000001",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {}
+    },
+    {
+      "id": "b2c3d4e5-0002-4000-8000-000000000002",
+      "name": "UseAPI",
+      "type": "n8n-nodes-useapi.useApi",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "resource": "midjourney",
+        "operation": "imagine",
+        "prompt": "A futuristic city at night",
+        "waitForCompletion": true
+      },
+      "credentials": {
+        "useApiCredentials": {
+          "id": "1",
+          "name": "UseAPI Credentials"
+        }
+      }
+    },
+    {
+      "id": "b2c3d4e5-0003-4000-8000-000000000003",
+      "name": "Output Result",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "UseAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UseAPI": {
+      "main": [
+        [
+          {
+            "node": "Output Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b2c3d4e5-0000-4000-8000-000000000000",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}
