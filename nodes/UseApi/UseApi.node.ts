@@ -673,17 +673,129 @@ async function executeKling(
 
 	if (operation === 'uploadAsset') {
 		const body: Record<string, any> = {
-			url: this.getNodeParameter('url', i) as string,
+			imageUrl: this.getNodeParameter('imageUrl', i) as string,
 		};
+		addOptionalField(this, body, 'account', i);
 		return await useApiRequest.call(this, 'POST', `${basePath}/assets`, body);
 	}
 
 	if (operation === 'listAssets') {
-		return await useApiRequest.call(this, 'GET', `${basePath}/assets`);
+		const qs: Record<string, any> = {};
+		const acct = this.getNodeParameter('klingAssetsAccount', i, '') as string;
+		const offset = this.getNodeParameter('klingAssetsOffset', i, 0) as number;
+		const limit = this.getNodeParameter('klingAssetsLimit', i, 20) as number;
+		if (acct) qs.account = acct;
+		if (offset) qs.offset = offset;
+		if (limit) qs.limit = limit;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets`, {}, qs);
 	}
 
 	if (operation === 'listAccounts') {
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'omniVideo') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('omniVideoModel', i) as string,
+		};
+		const prompt = this.getNodeParameter('omniVideoPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const dur = this.getNodeParameter('omniVideoDuration', i, '5') as string;
+		if (dur) body.duration = dur;
+		const ar = this.getNodeParameter('omniVideoAspectRatio', i, '16:9') as string;
+		if (ar) body.aspect_ratio = ar;
+		const imgUrl = this.getNodeParameter('omniVideoImageUrl', i, '') as string;
+		if (imgUrl) body.imageUrl = imgUrl;
+		const negPrompt = this.getNodeParameter('omniVideoNegativePrompt', i, '') as string;
+		if (negPrompt) body.negative_prompt = negPrompt;
+		const cfg = this.getNodeParameter('omniVideoCfg', i, 0) as number;
+		if (cfg) body.cfg = cfg;
+		addOptionalField(this, body, 'account', i);
+		return await klingPostAndPoll(`${basePath}/videos/omni`, body);
+	}
+
+	if (operation === 'image2videoFrames') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('i2vFramesModel', i) as string,
+			firstFrameUrl: this.getNodeParameter('firstFrameUrl', i) as string,
+			lastFrameUrl: this.getNodeParameter('lastFrameUrl', i) as string,
+		};
+		const prompt = this.getNodeParameter('i2vFramesPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const dur = this.getNodeParameter('i2vFramesDuration', i, '5') as string;
+		if (dur) body.duration = dur;
+		const cfg = this.getNodeParameter('i2vFramesCfg', i, 0) as number;
+		if (cfg) body.cfg = cfg;
+		addOptionalField(this, body, 'account', i);
+		return await klingPostAndPoll(`${basePath}/videos/image2video-frames`, body);
+	}
+
+	if (operation === 'image2videoElements') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('i2vElementsModel', i) as string,
+			imageUrl: this.getNodeParameter('i2vElementsImageUrl', i) as string,
+		};
+		const elemData = this.getNodeParameter('elementIds', i, {}) as { items?: Array<{ id: string }> };
+		const elementIds = elemData.items?.map((item) => item.id).filter(Boolean) || [];
+		if (elementIds.length > 0) body.elementIds = elementIds;
+		const prompt = this.getNodeParameter('i2vElementsPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const dur = this.getNodeParameter('i2vElementsDuration', i, '5') as string;
+		if (dur) body.duration = dur;
+		const ar = this.getNodeParameter('i2vElementsAspectRatio', i, '16:9') as string;
+		if (ar) body.aspect_ratio = ar;
+		addOptionalField(this, body, 'account', i);
+		return await klingPostAndPoll(`${basePath}/videos/image2video-elements`, body);
+	}
+
+	if (operation === 'kolorsElements') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('kolorsElemModel', i) as string,
+			prompt: this.getNodeParameter('kolorsElemPrompt', i) as string,
+		};
+		const elemData = this.getNodeParameter('kolorsElementIds', i, {}) as { items?: Array<{ id: string }> };
+		const elementIds = elemData.items?.map((item) => item.id).filter(Boolean) || [];
+		if (elementIds.length > 0) body.elementIds = elementIds;
+		const negPrompt = this.getNodeParameter('kolorsElemNegativePrompt', i, '') as string;
+		if (negPrompt) body.negative_prompt = negPrompt;
+		const ar = this.getNodeParameter('kolorsElemAspectRatio', i, '16:9') as string;
+		if (ar) body.aspect_ratio = ar;
+		const cfg = this.getNodeParameter('kolorsElemCfg', i, 0) as number;
+		if (cfg) body.cfg = cfg;
+		addOptionalField(this, body, 'account', i);
+		return await klingPostAndPoll(`${basePath}/images/kolors-elements`, body);
+	}
+
+	if (operation === 'listElements') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/elements`);
+	}
+
+	if (operation === 'listElementTags') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/elements/tags`);
+	}
+
+	if (operation === 'listElementVoices') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/elements/voices`);
+	}
+
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			email: this.getNodeParameter('klingAccountEmail', i) as string,
+			password: this.getNodeParameter('klingAccountPassword', i) as string,
+		};
+		const maxJobs = this.getNodeParameter('klingAccountMaxJobs', i, 10) as number;
+		if (maxJobs) body.maxJobs = maxJobs;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const email = this.getNodeParameter('klingAccountEmailGet', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${email}`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const email = this.getNodeParameter('klingAccountEmailGet', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${email}`);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown Kling operation: ${operation}`, {
