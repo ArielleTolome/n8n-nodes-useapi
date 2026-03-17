@@ -1,0 +1,12 @@
+nodes/
+credentials/
+*.ts
+!dist/**/*.js
+!dist/**/*.d.ts
+tsconfig.json
+.eslintrc.js
+.prettierrc
+gulpfile.js
+node_modules/
+.git/
+.gitignore
