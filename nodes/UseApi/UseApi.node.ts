@@ -1326,6 +1326,92 @@ async function executePixverse(
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
 	}
 
+	if (operation === 'createFusion') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('pvFusionModel', i) as string,
+			videoUrl1: this.getNodeParameter('pvVideoUrl1', i) as string,
+			videoUrl2: this.getNodeParameter('pvVideoUrl2', i) as string,
+		};
+		const prompt = this.getNodeParameter('pvFusionPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const dur = this.getNodeParameter('pvFusionDuration', i, '5') as string;
+		if (dur) body.duration = dur;
+		const res = this.getNodeParameter('pvFusionResolution', i, '720p') as string;
+		if (res) body.resolution = res;
+		return await postAndMaybePoll(this, i, `${basePath}/videos/create-fusion`, body, `${basePath}/videos`);
+	}
+
+	if (operation === 'createTransition') {
+		const body: Record<string, any> = {
+			model: this.getNodeParameter('pvTransitionModel', i) as string,
+			startImageUrl: this.getNodeParameter('pvTransitionStartUrl', i) as string,
+			endImageUrl: this.getNodeParameter('pvTransitionEndUrl', i) as string,
+		};
+		const prompt = this.getNodeParameter('pvTransitionPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const dur = this.getNodeParameter('pvTransitionDuration', i, '5') as string;
+		if (dur) body.duration = dur;
+		const res = this.getNodeParameter('pvTransitionResolution', i, '720p') as string;
+		if (res) body.resolution = res;
+		return await postAndMaybePoll(this, i, `${basePath}/videos/create-transition`, body, `${basePath}/videos`);
+	}
+
+	if (operation === 'listLipSyncVoices') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/videos/voices`);
+	}
+
+	if (operation === 'listEffects') {
+		const qs: Record<string, any> = {};
+		const model = this.getNodeParameter('pvEffectsModel', i, '') as string;
+		if (model) qs.model = model;
+		return await useApiRequest.call(this, 'GET', `${basePath}/videos/effects`, {}, qs);
+	}
+
+	if (operation === 'getVideo') {
+		const videoId = this.getNodeParameter('pvVideoId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/videos/${videoId}`);
+	}
+
+	if (operation === 'deleteVideo') {
+		const videoId = this.getNodeParameter('pvVideoId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/videos/${videoId}`);
+	}
+
+	if (operation === 'getImage') {
+		const imageId = this.getNodeParameter('pvImageId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/images/${imageId}`);
+	}
+
+	if (operation === 'deleteImage') {
+		const imageId = this.getNodeParameter('pvImageId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/images/${imageId}`);
+	}
+
+	if (operation === 'addAccount') {
+		const email = this.getNodeParameter('pvAccountEmail', i) as string;
+		const body: Record<string, any> = {
+			password: this.getNodeParameter('pvAccountPassword', i) as string,
+		};
+		const token = this.getNodeParameter('pvAccountToken', i, '') as string;
+		if (token) body.token = token;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts/${email}`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const email = this.getNodeParameter('pvAccountEmailGet', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${email}`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const email = this.getNodeParameter('pvAccountEmailGet', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${email}`);
+	}
+
+	if (operation === 'cancelJob') {
+		const id = this.getNodeParameter('pvCancelJobId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/scheduler/${id}`);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown PixVerse operation: ${operation}`, {
 		itemIndex: i,
 	});
