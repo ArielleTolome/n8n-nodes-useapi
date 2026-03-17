@@ -23,6 +23,8 @@ import {
 	minimaxFields,
 	insightfaceswapOperations,
 	insightfaceswapFields,
+	googleFlowOperations,
+	googleFlowFields,
 } from './UseApiDescription';
 
 export class UseApi implements INodeType {
@@ -34,7 +36,7 @@ export class UseApi implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description:
-			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap)',
+			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)',
 		defaults: { name: 'UseAPI' },
 		inputs: ['main'],
 		outputs: ['main'],
@@ -54,6 +56,7 @@ export class UseApi implements INodeType {
 			pixverseOperations,
 			minimaxOperations,
 			insightfaceswapOperations,
+			googleFlowOperations,
 			// Fields
 			...midjourneyFields,
 			...dreaminaFields,
@@ -62,6 +65,7 @@ export class UseApi implements INodeType {
 			...pixverseFields,
 			...minimaxFields,
 			...insightfaceswapFields,
+			...googleFlowFields,
 		],
 	};
 
@@ -96,6 +100,9 @@ export class UseApi implements INodeType {
 						break;
 					case 'insightfaceswap':
 						responseData = await executeInsightfaceswap.call(this, operation, i);
+						break;
+					case 'googleFlow':
+						responseData = await executeGoogleFlow.call(this, operation, i);
 						break;
 					default:
 						throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
@@ -898,4 +905,162 @@ async function executeInsightfaceswap(
 		`Unknown InsightFaceSwap operation: ${operation}`,
 		{ itemIndex: i },
 	);
+}
+
+// ──────────────────────────────────────────────────────────────
+// Google Flow
+// ──────────────────────────────────────────────────────────────
+
+async function executeGoogleFlow(
+	this: IExecuteFunctions,
+	operation: string,
+	i: number,
+): Promise<any> {
+	const basePath = '/google-flow';
+
+	if (operation === 'generateImage') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'aspect_ratio', i);
+		addOptionalNumber(this, body, 'image_count', i);
+		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'replyRef', i);
+		return await postAndMaybePoll(this, i, `${basePath}/images`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'upscaleImage') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('assetId', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/images/upscale`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'generateVideo') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'aspect_ratio', i);
+		addOptionalNumber(this, body, 'duration', i);
+		addOptionalNumber(this, body, 'seed', i);
+		addOptionalField(this, body, 'image_url', i);
+		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'replyRef', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'concatenateVideos') {
+		const assetIdsStr = this.getNodeParameter('assetIds', i) as string;
+		const assetIds = assetIdsStr.split(',').map((s) => s.trim()).filter(Boolean);
+		const body: Record<string, any> = { assetIds };
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/concatenate`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'extendVideo') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('assetId', i) as string,
+		};
+		addOptionalField(this, body, 'prompt', i);
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'toGif') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('assetId', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/gif`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'upscaleVideo') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('assetId', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'getJob') {
+		const jobid = this.getNodeParameter('jobid', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/jobs/${jobid}`);
+	}
+
+	if (operation === 'listJobs') {
+		const qs: Record<string, any> = {};
+		const account = this.getNodeParameter('account', i, '') as string;
+		const status = this.getNodeParameter('status', i, '') as string;
+		if (account) qs.account = account;
+		if (status) qs.status = status;
+		return await useApiRequest.call(this, 'GET', `${basePath}/jobs`, {}, qs);
+	}
+
+	if (operation === 'cancelJob') {
+		const jobid = this.getNodeParameter('jobid', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/jobs/${jobid}`);
+	}
+
+	if (operation === 'listAssets') {
+		const qs: Record<string, any> = {};
+		const account = this.getNodeParameter('account', i, '') as string;
+		if (account) qs.account = account;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets`, {}, qs);
+	}
+
+	if (operation === 'listAssetsByAccount') {
+		const account = this.getNodeParameter('account', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets/${account}`);
+	}
+
+	if (operation === 'deleteAsset') {
+		const assetId = this.getNodeParameter('assetId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/assets/${assetId}`);
+	}
+
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			cookies: this.getNodeParameter('cookies', i) as string,
+		};
+		addOptionalNumber(this, body, 'maxJobs', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const account = this.getNodeParameter('account', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${account}`);
+	}
+
+	if (operation === 'listAccounts') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const account = this.getNodeParameter('account', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${account}`);
+	}
+
+	if (operation === 'configureCaptcha') {
+		const body: Record<string, any> = {
+			account: this.getNodeParameter('account', i) as string,
+			provider: this.getNodeParameter('provider', i) as string,
+			apiKey: this.getNodeParameter('apiKey', i) as string,
+		};
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts/captcha-providers`, body);
+	}
+
+	if (operation === 'listCaptchaProviders') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/captcha-providers`);
+	}
+
+	if (operation === 'getCaptchaStats') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/captcha-stats`);
+	}
+
+	throw new NodeOperationError(this.getNode(), `Unknown Google Flow operation: ${operation}`, {
+		itemIndex: i,
+	});
 }

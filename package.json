@@ -1,7 +1,7 @@
 {
 	"name": "n8n-nodes-useapi",
-	"version": "0.1.0",
-	"description": "n8n community nodes for useapi.net - AI services API (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap)",
+	"version": "0.2.0",
+	"description": "n8n community nodes for useapi.net - AI services API (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -12,6 +12,9 @@
 		"runway",
 		"pixverse",
 		"minimax",
+		"google-flow",
+		"veo",
+		"imagen",
 		"ai",
 		"image-generation",
 		"video-generation"
