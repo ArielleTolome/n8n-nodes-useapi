@@ -669,10 +669,12 @@ async function executeRunway(
 
 	if (operation === 'createImage') {
 		const body: Record<string, any> = {
-			prompt: this.getNodeParameter('prompt', i) as string,
 			model: this.getNodeParameter('model', i) as string,
-			ratio: this.getNodeParameter('ratio', i) as string,
+			aspect_ratio: this.getNodeParameter('ratio', i) as string,
 		};
+		// text_prompt is required for gpt-image-1-5 and gpt-image-1-mini, optional for others
+		const textPrompt = this.getNodeParameter('prompt', i) as string;
+		if (textPrompt) body.text_prompt = textPrompt;
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'exploreMode', i);
 		addOptionalField(this, body, 'account', i);
