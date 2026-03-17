@@ -1317,45 +1317,43 @@ async function executeGoogleFlow(
 	if (operation === 'generateVideo') {
 		const body: Record<string, any> = {
 			prompt: this.getNodeParameter('prompt', i) as string,
+			model: this.getNodeParameter('model', i) as string,
 		};
-		addOptionalField(this, body, 'model', i);
 		addOptionalField(this, body, 'aspect_ratio', i);
-		addOptionalNumber(this, body, 'duration', i);
-		addOptionalNumber(this, body, 'seed', i);
-		addOptionalField(this, body, 'image_url', i);
+		const refUrlsData = this.getNodeParameter('referenceUrls', i, {}) as { items?: Array<{ url: string }> };
+		const refUrls = refUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
+		if (refUrls.length > 0) body.referenceUrls = refUrls;
 		addOptionalField(this, body, 'account', i);
-		addOptionalField(this, body, 'replyRef', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos`, body, `${basePath}/jobs`);
 	}
 
 	if (operation === 'concatenateVideos') {
-		const assetIdsStr = this.getNodeParameter('assetIds', i) as string;
-		const assetIds = assetIdsStr.split(',').map((s) => s.trim()).filter(Boolean);
-		const body: Record<string, any> = { assetIds };
-		addOptionalField(this, body, 'account', i);
-		return await postAndMaybePoll(this, i, `${basePath}/videos/concatenate`, body, `${basePath}/jobs`);
+		const videoUrlsData = this.getNodeParameter('videoUrls', i, {}) as { items?: Array<{ url: string }> };
+		const videoUrls = videoUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
+		const body: Record<string, any> = { videoUrls };
+		return await useApiRequest.call(this, 'POST', `${basePath}/videos/concatenate`, body);
 	}
 
 	if (operation === 'extendVideo') {
 		const body: Record<string, any> = {
-			assetId: this.getNodeParameter('assetId', i) as string,
+			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/jobs`);
 	}
 
-	if (operation === 'toGif') {
+	if (operation === 'createGif') {
 		const body: Record<string, any> = {
-			assetId: this.getNodeParameter('assetId', i) as string,
+			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
-		addOptionalField(this, body, 'account', i);
-		return await postAndMaybePoll(this, i, `${basePath}/videos/gif`, body, `${basePath}/jobs`);
+		addOptionalNumber(this, body, 'fps', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/videos/gif`, body);
 	}
 
 	if (operation === 'upscaleVideo') {
 		const body: Record<string, any> = {
-			assetId: this.getNodeParameter('assetId', i) as string,
+			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/jobs`);
