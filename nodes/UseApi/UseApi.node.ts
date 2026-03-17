@@ -385,10 +385,12 @@ async function executeDreamina(
 
 	if (operation === 'upscaleImage') {
 		const body: Record<string, any> = {
-			jobid: this.getNodeParameter('jobid', i) as string,
-			imageIndex: this.getNodeParameter('imageIndex', i) as number,
 			resolution: this.getNodeParameter('resolution', i) as string,
 		};
+		const imageJobId = this.getNodeParameter('imageJobId', i, '') as string;
+		const imageUrl = this.getNodeParameter('imageUrl', i, '') as string;
+		if (imageJobId) body.imageJobId = imageJobId;
+		if (imageUrl) body.imageUrl = imageUrl;
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/images/upscale`, body, `${basePath}/images`);
 	}
@@ -1138,36 +1140,53 @@ async function executePixverse(
 
 	if (operation === 'extendVideo') {
 		const body: Record<string, any> = {
-			jobid: this.getNodeParameter('jobid', i) as string,
+			videoId: this.getNodeParameter('videoId', i) as string,
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
-		return await postAndMaybePoll(this, i, `${basePath}/videos/extend-v4`, body, `${basePath}/videos`);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/videos`);
 	}
 
 	if (operation === 'upscaleVideo') {
 		const body: Record<string, any> = {
-			jobid: this.getNodeParameter('jobid', i) as string,
+			videoId: this.getNodeParameter('videoId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/videos`);
 	}
 
-	if (operation === 'lipSync') {
+	if (operation === 'createFrames') {
+		const imageUrlsData = this.getNodeParameter('imageUrls', i, {}) as { items?: Array<{ url: string }> };
+		const imageUrls = imageUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
 		const body: Record<string, any> = {
-			jobid: this.getNodeParameter('jobid', i) as string,
+			imageUrls,
+			model: this.getNodeParameter('model', i) as string,
 		};
-		addOptionalField(this, body, 'audio_url', i);
+		addOptionalField(this, body, 'prompt', i);
+		const duration = this.getNodeParameter('duration', i, 5) as number;
+		if (duration) body.duration = duration;
+		addOptionalField(this, body, 'resolution', i);
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/videos/create-frames`, body, `${basePath}/videos`);
+	}
+
+	if (operation === 'lipSyncVideo') {
+		const body: Record<string, any> = {
+			videoId: this.getNodeParameter('videoId', i) as string,
+		};
+		addOptionalField(this, body, 'audioUrl', i);
 		addOptionalField(this, body, 'text', i);
+		addOptionalField(this, body, 'voiceId', i);
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/lipsync`, body, `${basePath}/videos`);
 	}
 
 	if (operation === 'modifyVideo') {
 		const body: Record<string, any> = {
-			jobid: this.getNodeParameter('jobid', i) as string,
+			videoId: this.getNodeParameter('videoId', i) as string,
 			prompt: this.getNodeParameter('prompt', i) as string,
 		};
+		addOptionalField(this, body, 'model', i);
 		addOptionalField(this, body, 'account', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/modify`, body, `${basePath}/videos`);
 	}

@@ -612,32 +612,33 @@ export const dreaminaFields: INodeProperties[] = [
 
 	// upscaleImage
 	{
-		displayName: 'Job ID',
-		name: 'jobid',
+		displayName: 'Image Job ID',
+		name: 'imageJobId',
 		type: 'string',
-		required: true,
 		default: '',
-		description: 'Source image job ID to upscale',
+		description: 'Job ID from a previous Generate Image call (provide either this or Image URL)',
 		displayOptions: { show: { resource: ['dreamina'], operation: ['upscaleImage'] } },
 	},
 	{
-		displayName: 'Image Index',
-		name: 'imageIndex',
-		type: 'number',
-		default: 0,
-		description: 'Index of the image to upscale from the job',
+		displayName: 'Image URL',
+		name: 'imageUrl',
+		type: 'string',
+		default: '',
+		description: 'Direct URL of the image to upscale (provide either this or Image Job ID)',
 		displayOptions: { show: { resource: ['dreamina'], operation: ['upscaleImage'] } },
 	},
 	{
 		displayName: 'Resolution',
 		name: 'resolution',
 		type: 'options',
+		required: true,
 		options: [
-			{ name: '4K', value: '4k' },
-			{ name: '2K', value: '2k' },
+			{ name: '2K', value: '2K' },
+			{ name: '4K', value: '4K' },
+			{ name: '8K', value: '8K' },
 		],
-		default: '4k',
-		description: 'Upscaled image resolution',
+		default: '2K',
+		description: 'Target upscale resolution',
 		displayOptions: { show: { resource: ['dreamina'], operation: ['upscaleImage'] } },
 	},
 	{
@@ -2685,10 +2686,11 @@ export const pixverseOperations: INodeProperties = {
 	options: [
 		{ name: 'Create Video', value: 'createVideo', description: 'Create a video', action: 'Create a video' },
 		{ name: 'Create Image', value: 'createImage', description: 'Create an image', action: 'Create an image' },
+		{ name: 'Create Frames', value: 'createFrames', description: 'Create a video from keyframe images', action: 'Create frames video' },
 		{ name: 'Extend Video', value: 'extendVideo', description: 'Extend a video', action: 'Extend video' },
-		{ name: 'Upscale Video', value: 'upscaleVideo', description: 'Upscale a video', action: 'Upscale video' },
-		{ name: 'Lip Sync', value: 'lipSync', description: 'Add lip sync to a video', action: 'Lip sync video' },
 		{ name: 'Modify Video', value: 'modifyVideo', description: 'Modify a video with a prompt', action: 'Modify video' },
+		{ name: 'Lip Sync Video', value: 'lipSyncVideo', description: 'Add lip sync to a video', action: 'Lip sync video' },
+		{ name: 'Upscale Video', value: 'upscaleVideo', description: 'Upscale a video', action: 'Upscale video' },
 		{ name: 'Get Job', value: 'getJob', description: 'Get job status', action: 'Get job status' },
 		{ name: 'List Accounts', value: 'listAccounts', description: 'List all PixVerse accounts', action: 'List accounts' },
 	],
@@ -2866,12 +2868,12 @@ export const pixverseFields: INodeProperties[] = [
 
 	// extendVideo
 	{
-		displayName: 'Job ID',
-		name: 'jobid',
+		displayName: 'Video ID',
+		name: 'videoId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Source video job ID',
+		description: 'ID of the existing PixVerse video to extend',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['extendVideo'] } },
 	},
 	{
@@ -2901,12 +2903,12 @@ export const pixverseFields: INodeProperties[] = [
 
 	// upscaleVideo
 	{
-		displayName: 'Job ID',
-		name: 'jobid',
+		displayName: 'Video ID',
+		name: 'videoId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Source video job ID',
+		description: 'ID of the PixVerse video to upscale',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['upscaleVideo'] } },
 	},
 	{
@@ -2926,31 +2928,131 @@ export const pixverseFields: INodeProperties[] = [
 		displayOptions: { show: { resource: ['pixverse'], operation: ['upscaleVideo'] } },
 	},
 
-	// lipSync
+	// createFrames
 	{
-		displayName: 'Job ID',
-		name: 'jobid',
+		displayName: 'Image URLs',
+		name: 'imageUrls',
+		type: 'fixedCollection',
+		typeOptions: { multipleValues: true },
+		required: true,
+		default: {},
+		placeholder: 'Add Keyframe Image',
+		description: 'Keyframe image URLs for the video',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+		options: [
+			{
+				name: 'items',
+				displayName: 'Items',
+				values: [
+					{
+						displayName: 'URL',
+						name: 'url',
+						type: 'string',
+						default: '',
+						description: 'Keyframe image URL',
+					},
+				],
+			},
+		],
+	},
+	{
+		displayName: 'Prompt',
+		name: 'prompt',
+		type: 'string',
+		default: '',
+		description: 'Optional text prompt for the video',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+	{
+		displayName: 'Model',
+		name: 'model',
+		type: 'options',
+		options: [
+			{ name: 'V5.6', value: 'v5.6' },
+			{ name: 'V5.5', value: 'v5.5' },
+			{ name: 'V5', value: 'v5' },
+			{ name: 'V5 Fast', value: 'v5-fast' },
+		],
+		default: 'v5.6',
+		description: 'Video generation model',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+	{
+		displayName: 'Duration',
+		name: 'duration',
+		type: 'options',
+		options: [
+			{ name: '5 Seconds', value: 5 },
+			{ name: '8 Seconds', value: 8 },
+		],
+		default: 5,
+		description: 'Video duration in seconds',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+	{
+		displayName: 'Resolution',
+		name: 'resolution',
+		type: 'options',
+		options: [
+			{ name: '360p', value: '360p' },
+			{ name: '540p', value: '540p' },
+			{ name: '720p', value: '720p' },
+			{ name: '1080p', value: '1080p' },
+		],
+		default: '720p',
+		description: 'Video resolution',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific PixVerse account to use',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the job completes',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createFrames'] } },
+	},
+
+	// lipSyncVideo
+	{
+		displayName: 'Video ID',
+		name: 'videoId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Source video job ID',
-		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSync'] } },
+		description: 'ID of the PixVerse video to apply lip sync to',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
 	},
 	{
 		displayName: 'Audio URL',
-		name: 'audio_url',
+		name: 'audioUrl',
 		type: 'string',
 		default: '',
-		description: 'Audio URL for lip sync',
-		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSync'] } },
+		description: 'URL of audio file for lip sync',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
 	},
 	{
 		displayName: 'Text',
 		name: 'text',
 		type: 'string',
 		default: '',
-		description: 'Text for TTS lip sync',
-		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSync'] } },
+		description: 'Text to use with TTS for lip sync',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
+	},
+	{
+		displayName: 'Voice ID',
+		name: 'voiceId',
+		type: 'string',
+		default: '',
+		description: 'Voice ID to use with text TTS (optional)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
 	},
 	{
 		displayName: 'Account',
@@ -2958,7 +3060,7 @@ export const pixverseFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		description: 'Specific PixVerse account to use',
-		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSync'] } },
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
 	},
 	{
 		displayName: 'Wait for Completion',
@@ -2966,17 +3068,17 @@ export const pixverseFields: INodeProperties[] = [
 		type: 'boolean',
 		default: true,
 		description: 'Whether to poll until the job completes',
-		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSync'] } },
+		displayOptions: { show: { resource: ['pixverse'], operation: ['lipSyncVideo'] } },
 	},
 
 	// modifyVideo
 	{
-		displayName: 'Job ID',
-		name: 'jobid',
+		displayName: 'Video ID',
+		name: 'videoId',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Source video job ID',
+		description: 'ID of the PixVerse video to modify',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
 	},
 	{
@@ -2985,7 +3087,21 @@ export const pixverseFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Modification prompt',
+		description: 'Modification instructions',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
+	},
+	{
+		displayName: 'Model',
+		name: 'model',
+		type: 'options',
+		options: [
+			{ name: 'V5.6', value: 'v5.6' },
+			{ name: 'V5.5', value: 'v5.5' },
+			{ name: 'V5', value: 'v5' },
+			{ name: 'V5 Fast', value: 'v5-fast' },
+		],
+		default: 'v5.6',
+		description: 'Video generation model (optional)',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
 	},
 	{
@@ -3004,6 +3120,9 @@ export const pixverseFields: INodeProperties[] = [
 		description: 'Whether to poll until the job completes',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
 	},
+
+	// extendVideo - update to use videoId
+	// (existing extendVideo fields use jobid - keeping consistent with videoId for new spec ops)
 
 	// getJob
 	{
