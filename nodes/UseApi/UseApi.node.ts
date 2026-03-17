@@ -432,12 +432,10 @@ async function executeDreamina(
 
 	if (operation === 'upscaleImage') {
 		const body: Record<string, any> = {
-			resolution: this.getNodeParameter('resolution', i) as string,
+			upscaleResolution: this.getNodeParameter('resolution', i) as string,
 		};
 		const imageJobId = this.getNodeParameter('imageJobId', i, '') as string;
-		const imageUrl = this.getNodeParameter('imageUrl', i, '') as string;
-		if (imageJobId) body.imageJobId = imageJobId;
-		if (imageUrl) body.imageUrl = imageUrl;
+		if (imageJobId) body.jobid = imageJobId;
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'drm_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'drm_captchaRetry', i, 'captchaRetry');
@@ -776,7 +774,7 @@ async function executeKling(
 
 	if (operation === 'uploadAsset') {
 		const body: Record<string, any> = {
-			imageUrl: this.getNodeParameter('imageUrl', i) as string,
+			image_url: this.getNodeParameter('imageUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		return await useApiRequest.call(this, 'POST', `${basePath}/assets`, body);
@@ -808,7 +806,7 @@ async function executeKling(
 		const ar = this.getNodeParameter('omniVideoAspectRatio', i, '16:9') as string;
 		if (ar) body.aspect_ratio = ar;
 		const imgUrl = this.getNodeParameter('omniVideoImageUrl', i, '') as string;
-		if (imgUrl) body.imageUrl = imgUrl;
+		if (imgUrl) body.image_url = imgUrl;
 		const negPrompt = this.getNodeParameter('omniVideoNegativePrompt', i, '') as string;
 		if (negPrompt) body.negative_prompt = negPrompt;
 		const cfg = this.getNodeParameter('omniVideoCfg', i, 0) as number;
@@ -826,8 +824,8 @@ async function executeKling(
 	if (operation === 'image2videoFrames') {
 		const body: Record<string, any> = {
 			model: this.getNodeParameter('i2vFramesModel', i) as string,
-			firstFrameUrl: this.getNodeParameter('firstFrameUrl', i) as string,
-			lastFrameUrl: this.getNodeParameter('lastFrameUrl', i) as string,
+			image: this.getNodeParameter('firstFrameUrl', i) as string,
+			image_tail: this.getNodeParameter('lastFrameUrl', i) as string,
 		};
 		const prompt = this.getNodeParameter('i2vFramesPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
@@ -848,11 +846,11 @@ async function executeKling(
 	if (operation === 'image2videoElements') {
 		const body: Record<string, any> = {
 			model: this.getNodeParameter('i2vElementsModel', i) as string,
-			imageUrl: this.getNodeParameter('i2vElementsImageUrl', i) as string,
+			image_url: this.getNodeParameter('i2vElementsImageUrl', i) as string,
 		};
 		const elemData = this.getNodeParameter('elementIds', i, {}) as { items?: Array<{ id: string }> };
 		const elementIds = elemData.items?.map((item) => item.id).filter(Boolean) || [];
-		if (elementIds.length > 0) body.elementIds = elementIds;
+		if (elementIds.length > 0) body.element_ids = elementIds;
 		const prompt = this.getNodeParameter('i2vElementsPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
 		const dur = this.getNodeParameter('i2vElementsDuration', i, '5') as string;
@@ -876,7 +874,7 @@ async function executeKling(
 		};
 		const elemData = this.getNodeParameter('kolorsElementIds', i, {}) as { items?: Array<{ id: string }> };
 		const elementIds = elemData.items?.map((item) => item.id).filter(Boolean) || [];
-		if (elementIds.length > 0) body.elementIds = elementIds;
+		if (elementIds.length > 0) body.element_ids = elementIds;
 		const negPrompt = this.getNodeParameter('kolorsElemNegativePrompt', i, '') as string;
 		if (negPrompt) body.negative_prompt = negPrompt;
 		const ar = this.getNodeParameter('kolorsElemAspectRatio', i, '16:9') as string;
@@ -1529,7 +1527,7 @@ async function executePixverse(
 
 	if (operation === 'extendVideo') {
 		const body: Record<string, any> = {
-			videoId: this.getNodeParameter('videoId', i) as string,
+			video_id: this.getNodeParameter('videoId', i) as string,
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
@@ -1542,7 +1540,7 @@ async function executePixverse(
 
 	if (operation === 'upscaleVideo') {
 		const body: Record<string, any> = {
-			videoId: this.getNodeParameter('videoId', i) as string,
+			video_id: this.getNodeParameter('videoId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'pvu_captchaToken', i, 'captchaToken');
@@ -1572,11 +1570,11 @@ async function executePixverse(
 
 	if (operation === 'lipSyncVideo') {
 		const body: Record<string, any> = {
-			videoId: this.getNodeParameter('videoId', i) as string,
+			video_id: this.getNodeParameter('videoId', i) as string,
 		};
-		addOptionalField(this, body, 'audioUrl', i);
+		addOptionalField(this, body, 'audioUrl', i, 'audio_path');
 		addOptionalField(this, body, 'text', i);
-		addOptionalField(this, body, 'voiceId', i);
+		addOptionalField(this, body, 'voiceId', i, 'speaker_id');
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'pvl_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvl_captchaRetry', i, 'captchaRetry');
@@ -1586,7 +1584,7 @@ async function executePixverse(
 
 	if (operation === 'modifyVideo') {
 		const body: Record<string, any> = {
-			videoId: this.getNodeParameter('videoId', i) as string,
+			video_id: this.getNodeParameter('videoId', i) as string,
 			prompt: this.getNodeParameter('prompt', i) as string,
 		};
 		addOptionalField(this, body, 'model', i);
@@ -1611,8 +1609,8 @@ async function executePixverse(
 	if (operation === 'createFusion') {
 		const body: Record<string, any> = {
 			model: this.getNodeParameter('pvFusionModel', i) as string,
-			videoUrl1: this.getNodeParameter('pvVideoUrl1', i) as string,
-			videoUrl2: this.getNodeParameter('pvVideoUrl2', i) as string,
+			frame_1_path: this.getNodeParameter('pvVideoUrl1', i) as string,
+			frame_2_path: this.getNodeParameter('pvVideoUrl2', i) as string,
 		};
 		const prompt = this.getNodeParameter('pvFusionPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
@@ -1630,8 +1628,8 @@ async function executePixverse(
 	if (operation === 'createTransition') {
 		const body: Record<string, any> = {
 			model: this.getNodeParameter('pvTransitionModel', i) as string,
-			startImageUrl: this.getNodeParameter('pvTransitionStartUrl', i) as string,
-			endImageUrl: this.getNodeParameter('pvTransitionEndUrl', i) as string,
+			frame_1_path: this.getNodeParameter('pvTransitionStartUrl', i) as string,
+			frame_2_path: this.getNodeParameter('pvTransitionEndUrl', i) as string,
 		};
 		const prompt = this.getNodeParameter('pvTransitionPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
@@ -1933,9 +1931,7 @@ async function executeGoogleFlow(
 		};
 		addOptionalField(this, body, 'aspect_ratio', i);
 		addOptionalNumber(this, body, 'gfVideoDuration', i, 'duration');
-		const refUrlsData = this.getNodeParameter('referenceUrls', i, {}) as { items?: Array<{ url: string }> };
-		const refUrls = refUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
-		if (refUrls.length > 0) body.referenceUrls = refUrls;
+		// referenceUrls collection is intentionally omitted — individual referenceImage_1/2/3 fields are used below
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'gfEmail', i, 'email');
 		addOptionalNumber(this, body, 'gfCount', i, 'count');
@@ -1957,7 +1953,8 @@ async function executeGoogleFlow(
 	if (operation === 'concatenateVideos') {
 		const videoUrlsData = this.getNodeParameter('videoUrls', i, {}) as { items?: Array<{ url: string }> };
 		const videoUrls = videoUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
-		const body: Record<string, any> = { videoUrls };
+		const media = videoUrls.map((url) => ({ mediaGenerationId: url }));
+		const body: Record<string, any> = { media };
 		addOptionalField(this, body, 'gfConcatEmail', i, 'email');
 		addOptionalField(this, body, 'gfConcatReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'gfConcatReplyRef', i, 'replyRef');
@@ -1969,7 +1966,7 @@ async function executeGoogleFlow(
 
 	if (operation === 'extendVideo') {
 		const body: Record<string, any> = {
-			videoUrl: this.getNodeParameter('videoUrl', i) as string,
+			mediaGenerationId: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
@@ -1984,7 +1981,7 @@ async function executeGoogleFlow(
 
 	if (operation === 'createGif') {
 		const body: Record<string, any> = {
-			videoUrl: this.getNodeParameter('videoUrl', i) as string,
+			mediaGenerationId: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalNumber(this, body, 'fps', i);
 		addOptionalField(this, body, 'gfGifEmail', i, 'email');
@@ -1998,7 +1995,7 @@ async function executeGoogleFlow(
 
 	if (operation === 'upscaleVideo') {
 		const body: Record<string, any> = {
-			videoUrl: this.getNodeParameter('videoUrl', i) as string,
+			mediaGenerationId: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'gfUpvEmail', i, 'email');
@@ -2137,7 +2134,7 @@ async function executeMureka(
 		};
 		addOptionalField(this, body, 'model', i);
 		addOptionalField(this, body, 'style', i);
-		addOptionalField(this, body, 'vocalRef', i);
+		addOptionalField(this, body, 'vocalRef', i, 'vocal_id');
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'murekacreateAdvancedSongReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'murekacreateAdvancedSongReplyRef', i, 'replyRef');
@@ -2175,7 +2172,7 @@ async function executeMureka(
 		const body: Record<string, any> = {
 			text: this.getNodeParameter('text', i) as string,
 		};
-		addOptionalField(this, body, 'voiceId', i);
+		addOptionalField(this, body, 'voiceId', i, 'voice_id');
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'murekatextToSpeechReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'murekatextToSpeechReplyRef', i, 'replyRef');
@@ -2235,7 +2232,7 @@ async function executeMureka(
 
 	if (operation === 'downloadSong') {
 		const body: Record<string, any> = {
-			songId: this.getNodeParameter('murekaDownloadSongId', i) as string,
+			song_id: this.getNodeParameter('murekaDownloadSongId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
 		const response = await useApiRequest.call(this, 'POST', `${basePath}/music/download`, body);
@@ -2249,7 +2246,7 @@ async function executeMureka(
 
 	if (operation === 'extendSong') {
 		const body: Record<string, any> = {
-			songId: this.getNodeParameter('murekaExtendSongId', i) as string,
+			song_id: this.getNodeParameter('murekaExtendSongId', i) as string,
 		};
 		const prompt = this.getNodeParameter('murekaExtendPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
@@ -2264,7 +2261,7 @@ async function executeMureka(
 
 	if (operation === 'generateMusicVideo') {
 		const body: Record<string, any> = {
-			songId: this.getNodeParameter('murekaVideoSongId', i) as string,
+			song_id: this.getNodeParameter('murekaVideoSongId', i) as string,
 		};
 		const style = this.getNodeParameter('murekaVideoStyle', i, '') as string;
 		if (style) body.style = style;
