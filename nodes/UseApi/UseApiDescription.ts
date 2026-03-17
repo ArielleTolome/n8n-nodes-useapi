@@ -7044,4 +7044,200 @@ export const temporlorFields: INodeProperties[] = [
 		description: 'The cloned voice ID to delete',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['deleteClonedVoice'] } },
 	},
+
+	// ─────────────────────────────────────────────────────────────────
+	// asyncMode — fire-and-forget flag across all generation operations
+	// ─────────────────────────────────────────────────────────────────
+
+	// Midjourney async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['imagine', 'button', 'describe', 'blend', 'remix'] } },
+	},
+
+	// Dreamina upscaleImage async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: { show: { resource: ['dreamina'], operation: ['upscaleImage'] } },
+	},
+
+	// Dreamina generateVideo — endImageUrl (last frame)
+	{
+		displayName: 'End Frame Ref',
+		name: 'endFrameRef',
+		type: 'string',
+		default: '',
+		description: 'Asset reference from a previous image job to use as end frame (optional)',
+		displayOptions: { show: { resource: ['dreamina'], operation: ['generateVideo'] } },
+	},
+
+	// Kling remaining ops async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: {
+			show: {
+				resource: ['kling'],
+				operation: [
+					'imageToVideoEffects', 'extendVideo', 'lipSync', 'addSound', 'motionCreate',
+					'textToImage', 'omniImage', 'virtualTryOn', 'avatarVideo', 'omniVideo',
+					'image2videoFrames', 'image2videoElements', 'kolorsElements',
+				],
+			},
+		},
+	},
+
+	// Runway async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: {
+			show: {
+				resource: ['runway'],
+				operation: [
+					'createVideo', 'createImage', 'lipSync', 'actTwo', 'frames',
+					'gen4_5Create', 'gen4TurboCreate', 'gen4Create', 'gen4Video', 'actTwoVoice',
+					'gen3TurboCreate', 'gen3Create', 'gen3TurboVideo', 'gen3Video',
+					'gen3TurboExtend', 'gen3Extend', 'gen3TurboExpand',
+					'gen3TurboActOne', 'gen3ActOne', 'superSlowMotion',
+				],
+			},
+		},
+	},
+
+	// Runway createVideo — negative_prompt
+	{
+		displayName: 'Negative Prompt',
+		name: 'negative_prompt',
+		type: 'string',
+		default: '',
+		description: 'What to avoid in the generated video (optional, model-dependent)',
+		displayOptions: { show: { resource: ['runway'], operation: ['createVideo'] } },
+	},
+
+	// PixVerse async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: {
+			show: {
+				resource: ['pixverse'],
+				operation: [
+					'createVideo', 'createImage', 'createFrames', 'extendVideo',
+					'lipSyncVideo', 'modifyVideo', 'createFusion', 'createTransition', 'upscaleVideo',
+				],
+			},
+		},
+	},
+
+	// PixVerse createVideo — endImageUrl (last/tail frame)
+	{
+		displayName: 'End Image URL',
+		name: 'end_image_url',
+		type: 'string',
+		default: '',
+		description: 'Optional URL of the last/tail frame image for end-frame conditioning',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['createVideo'] } },
+	},
+
+	// MiniMax createImage, createMusic, agent async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: { show: { resource: ['minimax'], operation: ['createImage', 'createMusic', 'agent'] } },
+	},
+
+	// MiniMax createVideo — endImageUrl (last frame for I2V)
+	{
+		displayName: 'End Image URL',
+		name: 'end_image_url',
+		type: 'string',
+		default: '',
+		description: 'Optional URL of the last frame image for image-to-video end-frame conditioning',
+		displayOptions: { show: { resource: ['minimax'], operation: ['createVideo'] } },
+	},
+
+	// InsightFaceSwap swapFace async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: { show: { resource: ['insightfaceswap'], operation: ['swapFace'] } },
+	},
+
+	// GoogleFlow remaining ops async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: {
+			show: {
+				resource: ['googleFlow'],
+				operation: ['generateImage', 'upscaleImage', 'concatenateVideos', 'extendVideo', 'createGif', 'upscaleVideo'],
+			},
+		},
+	},
+
+	// GoogleFlow generateVideo — duration
+	{
+		displayName: 'Duration',
+		name: 'gfVideoDuration',
+		type: 'options',
+		options: [
+			{ name: '5 Seconds', value: 5 },
+			{ name: '8 Seconds', value: 8 },
+		],
+		default: 5,
+		description: 'Video duration in seconds',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['generateVideo'] } },
+	},
+
+	// Mureka remaining ops async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: {
+			show: {
+				resource: ['mureka'],
+				operation: ['createAdvancedSong', 'createInstrumental', 'generateLyrics', 'textToSpeech', 'extendSong', 'generateMusicVideo'],
+			},
+		},
+	},
+
+	// TemPolor splitStems async
+	{
+		displayName: 'Async Mode',
+		name: 'asyncMode',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to fire-and-forget (submit job without waiting for server-side completion)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
+	},
 ];

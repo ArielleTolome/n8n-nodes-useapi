@@ -200,6 +200,8 @@ async function runwayTaskPoll(
 	body: Record<string, any>,
 	basePath: string,
 ): Promise<any> {
+	const asyncMode = ctx.getNodeParameter('asyncMode', i, false) as boolean;
+	if (asyncMode) body.async = true;
 	const response = await useApiRequest.call(ctx, 'POST', endpoint, body);
 	const wait = ctx.getNodeParameter('waitForCompletion', i, true) as boolean;
 	if (!wait) return response;
@@ -230,6 +232,8 @@ async function postAndMaybePoll(
 	pollEndpointPrefix: string,
 	idField: string = 'jobid',
 ): Promise<any> {
+	const asyncMode = ctx.getNodeParameter('asyncMode', i, false) as boolean;
+	if (asyncMode) body.async = true;
 	const response = await useApiRequest.call(ctx, 'POST', postEndpoint, body);
 	const wait = ctx.getNodeParameter('waitForCompletion', i, true) as boolean;
 	const id = response[idField];
@@ -412,6 +416,7 @@ async function executeDreamina(
 			duration: this.getNodeParameter('duration', i) as number,
 		};
 		addOptionalField(this, body, 'firstFrameRef', i);
+		addOptionalField(this, body, 'endFrameRef', i);
 		addOptionalNumber(this, body, 'dreaminaVideoSeed', i, 'seed');
 		addOptionalField(this, body, 'account', i);
 		addOptionalBool(this, body, 'dreaminaVideoAsync', i, 'async');
@@ -512,6 +517,8 @@ async function executeKling(
 		postEndpoint: string,
 		body: Record<string, any>,
 	): Promise<any> => {
+		const asyncMode = this.getNodeParameter('asyncMode', i, false) as boolean;
+		if (asyncMode) body.async = true;
 		const response = await useApiRequest.call(this, 'POST', postEndpoint, body);
 		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
 		const taskId = response.task_id || response.jobid;
@@ -948,6 +955,7 @@ async function executeRunway(
 		body.audio = this.getNodeParameter('audio', i, true) as boolean;
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'exploreMode', i);
+		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalField(this, body, 'account', i, 'email');
 		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
@@ -1492,6 +1500,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalField(this, body, 'image_url', i);
+		addOptionalField(this, body, 'end_image_url', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'captchaToken', i);
 		addOptionalNumber(this, body, 'captchaRetry', i);
@@ -1712,6 +1721,7 @@ async function executeMinimax(
 			duration: this.getNodeParameter('duration', i) as number,
 		};
 		addOptionalField(this, body, 'image_url', i);
+		addOptionalField(this, body, 'end_image_url', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'mmVideoAsync', i, 'async');
@@ -1762,6 +1772,8 @@ async function executeMinimax(
 		addOptionalField(this, body, 'mmAgent_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'mmAgent_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'mmAgent_captchaOrder', i, 'captchaOrder');
+		const asyncMode = this.getNodeParameter('asyncMode', i, false) as boolean;
+		if (asyncMode) body.async = true;
 		const response = await useApiRequest.call(this, 'POST', `${basePath}/agent`, body);
 		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
 		const jobId = response.jobId || response.jobid;
@@ -1915,6 +1927,7 @@ async function executeGoogleFlow(
 			model: this.getNodeParameter('model', i) as string,
 		};
 		addOptionalField(this, body, 'aspect_ratio', i);
+		addOptionalNumber(this, body, 'gfVideoDuration', i, 'duration');
 		const refUrlsData = this.getNodeParameter('referenceUrls', i, {}) as { items?: Array<{ url: string }> };
 		const refUrls = refUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
 		if (refUrls.length > 0) body.referenceUrls = refUrls;
@@ -2279,6 +2292,8 @@ async function executeTempolor(
 		postEndpoint: string,
 		body: Record<string, any>,
 	): Promise<any> => {
+		const asyncMode = this.getNodeParameter('asyncMode', i, false) as boolean;
+		if (asyncMode) body.async = true;
 		const response = await useApiRequest.call(this, 'POST', postEndpoint, body);
 		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
 		const jobId = response.job_id || response.jobId || response.jobid;
