@@ -175,6 +175,39 @@ function addOptionalBool(
 	}
 }
 
+/**
+ * POST to a Runway-specific endpoint and poll /tasks/{taskId} until SUCCEEDED/FAILED.
+ * Handles both flat { taskId: "..." } and nested { task: { taskId: "..." } } responses.
+ */
+async function runwayTaskPoll(
+	ctx: IExecuteFunctions,
+	i: number,
+	endpoint: string,
+	body: Record<string, any>,
+	basePath: string,
+): Promise<any> {
+	const response = await useApiRequest.call(ctx, 'POST', endpoint, body);
+	const wait = ctx.getNodeParameter('waitForCompletion', i, true) as boolean;
+	if (!wait) return response;
+	const taskId = (response.taskId || response.task?.taskId) as string | undefined;
+	if (!taskId) return response;
+	const pollEndpoint = `${basePath}/tasks/${taskId}`;
+	const startTime = Date.now();
+	const intervalMs = 3000;
+	const maxWaitMs = 300000;
+	while (Date.now() - startTime < maxWaitMs) {
+		const poll = await useApiRequest.call(ctx, 'GET', pollEndpoint);
+		const status = (poll.status || poll.task?.status || '') as string;
+		if (status === 'SUCCEEDED' || status === 'completed') return poll;
+		if (status === 'FAILED' || status === 'failed' || status === 'error') {
+			const errMsg = JSON.stringify(poll.error || poll.task?.error || 'Task failed');
+			throw new NodeOperationError(ctx.getNode(), `Runway task failed: ${errMsg}`);
+		}
+		await new Promise((resolve) => setTimeout(resolve, intervalMs));
+	}
+	throw new NodeOperationError(ctx.getNode(), 'Runway task polling timed out after 5 minutes');
+}
+
 async function postAndMaybePoll(
 	ctx: IExecuteFunctions,
 	i: number,
@@ -726,6 +759,339 @@ async function executeRunway(
 
 	if (operation === 'listAccounts') {
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	// ── Gen-4.5 Create ───────────────────────────────────────────
+	if (operation === 'gen4_5Create') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'text_prompt', i);
+		addOptionalField(this, body, 'firstImage_assetId', i);
+		addOptionalField(this, body, 'lastImage_assetId', i);
+		addOptionalField(this, body, 'aspect_ratio', i);
+		const secs = this.getNodeParameter('seconds', i, 5) as number;
+		if (secs) body.seconds = secs;
+		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4_5/create`, body, basePath);
+	}
+
+	// ── Gen-4 Turbo Create ───────────────────────────────────────
+	if (operation === 'gen4TurboCreate') {
+		const body: Record<string, any> = {
+			firstImage_assetId: this.getNodeParameter('firstImage_assetId', i) as string,
+		};
+		addOptionalField(this, body, 'text_prompt', i);
+		addOptionalField(this, body, 'aspect_ratio', i);
+		const secs = this.getNodeParameter('seconds', i, 5) as number;
+		if (secs) body.seconds = secs;
+		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4turbo/create`, body, basePath);
+	}
+
+	// ── Gen-4 Create ─────────────────────────────────────────────
+	if (operation === 'gen4Create') {
+		const body: Record<string, any> = {
+			firstImage_assetId: this.getNodeParameter('firstImage_assetId', i) as string,
+		};
+		addOptionalField(this, body, 'lastImage_assetId', i);
+		addOptionalField(this, body, 'text_prompt', i);
+		addOptionalField(this, body, 'aspect_ratio', i);
+		const secs = this.getNodeParameter('seconds', i, 5) as number;
+		if (secs) body.seconds = secs;
+		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4/create`, body, basePath);
+	}
+
+	// ── Gen-4 Upscale 4K ─────────────────────────────────────────
+	if (operation === 'gen4Upscale') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('upscaleAssetId', i) as string,
+		};
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4/upscale`, body, basePath);
+	}
+
+	// ── Gen-4 Aleph (Video-to-Video) ─────────────────────────────
+	if (operation === 'gen4Video') {
+		const body: Record<string, any> = {
+			video_assetId: this.getNodeParameter('video_assetId', i) as string,
+			text_prompt: this.getNodeParameter('text_prompt', i) as string,
+		};
+		addOptionalField(this, body, 'image_assetId', i);
+		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4/video`, body, basePath);
+	}
+
+	// ── Act Two Voice ────────────────────────────────────────────
+	if (operation === 'actTwoVoice') {
+		const body: Record<string, any> = {
+			video_assetId: this.getNodeParameter('video_assetId', i) as string,
+			voiceId: this.getNodeParameter('voiceId', i) as string,
+		};
+		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen4/act-two-voice`, body, basePath);
+	}
+
+	// ── Gen-3 Turbo Create ───────────────────────────────────────
+	if (operation === 'gen3TurboCreate') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'g3FirstImage_assetId', i, 'firstImage_assetId');
+		addOptionalField(this, body, 'g3MiddleImage_assetId', i, 'middleImage_assetId');
+		addOptionalField(this, body, 'g3LastImage_assetId', i, 'lastImage_assetId');
+		addOptionalField(this, body, 'g3TextPrompt', i, 'text_prompt');
+		addOptionalField(this, body, 'g3AspectRatio', i, 'aspect_ratio');
+		const g3Secs = this.getNodeParameter('g3Seconds', i, 5) as number;
+		if (g3Secs) body.seconds = g3Secs;
+		const g3Horiz = this.getNodeParameter('g3Horizontal', i, 0) as number;
+		if (g3Horiz) body.horizontal = g3Horiz;
+		const g3Vert = this.getNodeParameter('g3Vertical', i, 0) as number;
+		if (g3Vert) body.vertical = g3Vert;
+		const g3Zoom = this.getNodeParameter('g3Zoom', i, 0) as number;
+		if (g3Zoom) body.zoom = g3Zoom;
+		const g3Roll = this.getNodeParameter('g3Roll', i, 0) as number;
+		if (g3Roll) body.roll = g3Roll;
+		const g3Pan = this.getNodeParameter('g3Pan', i, 0) as number;
+		if (g3Pan) body.pan = g3Pan;
+		const g3Tilt = this.getNodeParameter('g3Tilt', i, 0) as number;
+		if (g3Tilt) body.tilt = g3Tilt;
+		addOptionalBool(this, body, 'g3Static', i, 'static');
+		addOptionalNumber(this, body, 'g3Seed', i, 'seed');
+		addOptionalBool(this, body, 'g3ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/create`, body, basePath);
+	}
+
+	// ── Gen-3 Create ─────────────────────────────────────────────
+	if (operation === 'gen3Create') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'g3FirstImage_assetId', i, 'firstImage_assetId');
+		addOptionalField(this, body, 'g3MiddleImage_assetId', i, 'middleImage_assetId');
+		addOptionalField(this, body, 'g3LastImage_assetId', i, 'lastImage_assetId');
+		addOptionalField(this, body, 'g3TextPrompt', i, 'text_prompt');
+		addOptionalField(this, body, 'g3AspectRatio', i, 'aspect_ratio');
+		const g3Secs = this.getNodeParameter('g3Seconds', i, 5) as number;
+		if (g3Secs) body.seconds = g3Secs;
+		const g3Horiz = this.getNodeParameter('g3Horizontal', i, 0) as number;
+		if (g3Horiz) body.horizontal = g3Horiz;
+		const g3Vert = this.getNodeParameter('g3Vertical', i, 0) as number;
+		if (g3Vert) body.vertical = g3Vert;
+		const g3Zoom = this.getNodeParameter('g3Zoom', i, 0) as number;
+		if (g3Zoom) body.zoom = g3Zoom;
+		const g3Roll = this.getNodeParameter('g3Roll', i, 0) as number;
+		if (g3Roll) body.roll = g3Roll;
+		const g3Pan = this.getNodeParameter('g3Pan', i, 0) as number;
+		if (g3Pan) body.pan = g3Pan;
+		const g3Tilt = this.getNodeParameter('g3Tilt', i, 0) as number;
+		if (g3Tilt) body.tilt = g3Tilt;
+		addOptionalBool(this, body, 'g3Static', i, 'static');
+		addOptionalNumber(this, body, 'g3Seed', i, 'seed');
+		addOptionalBool(this, body, 'g3ExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3/create`, body, basePath);
+	}
+
+	// ── Gen-3 Turbo Video ────────────────────────────────────────
+	if (operation === 'gen3TurboVideo') {
+		const body: Record<string, any> = {
+			video_assetId: this.getNodeParameter('g3vVideoAssetId', i) as string,
+		};
+		addOptionalField(this, body, 'g3vTextPrompt', i, 'text_prompt');
+		const g3vSecs = this.getNodeParameter('g3vSeconds', i, 5) as number;
+		if (g3vSecs) body.seconds = g3vSecs;
+		addOptionalNumber(this, body, 'g3vSeed', i, 'seed');
+		addOptionalBool(this, body, 'g3vExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/video`, body, basePath);
+	}
+
+	// ── Gen-3 Video ──────────────────────────────────────────────
+	if (operation === 'gen3Video') {
+		const body: Record<string, any> = {
+			video_assetId: this.getNodeParameter('g3vVideoAssetId', i) as string,
+		};
+		addOptionalField(this, body, 'g3vTextPrompt', i, 'text_prompt');
+		const g3vSecs = this.getNodeParameter('g3vSeconds', i, 5) as number;
+		if (g3vSecs) body.seconds = g3vSecs;
+		addOptionalNumber(this, body, 'g3vSeed', i, 'seed');
+		addOptionalBool(this, body, 'g3vExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3/video`, body, basePath);
+	}
+
+	// ── Gen-3 Turbo Extend ───────────────────────────────────────
+	if (operation === 'gen3TurboExtend') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('extendAssetId', i) as string,
+		};
+		addOptionalField(this, body, 'extendTextPrompt', i, 'text_prompt');
+		addOptionalNumber(this, body, 'extendSeed', i, 'seed');
+		addOptionalBool(this, body, 'extendExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/extend`, body, basePath);
+	}
+
+	// ── Gen-3 Extend ─────────────────────────────────────────────
+	if (operation === 'gen3Extend') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('extendAssetId', i) as string,
+		};
+		addOptionalField(this, body, 'extendTextPrompt', i, 'text_prompt');
+		addOptionalNumber(this, body, 'extendSeed', i, 'seed');
+		addOptionalBool(this, body, 'extendExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3/extend`, body, basePath);
+	}
+
+	// ── Gen-3 Turbo Expand ───────────────────────────────────────
+	if (operation === 'gen3TurboExpand') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('expandAssetId', i) as string,
+		};
+		addOptionalBool(this, body, 'expandExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/expand`, body, basePath);
+	}
+
+	// ── Gen-3 Turbo Act One ──────────────────────────────────────
+	if (operation === 'gen3TurboActOne') {
+		const body: Record<string, any> = {
+			driving_assetId: this.getNodeParameter('driving_assetId', i) as string,
+			character_assetId: this.getNodeParameter('character_assetId', i) as string,
+		};
+		addOptionalNumber(this, body, 'motion_multiplier', i);
+		addOptionalField(this, body, 'actOneAspectRatio', i, 'aspect_ratio');
+		addOptionalBool(this, body, 'actOneExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/actone`, body, basePath);
+	}
+
+	// ── Gen-3 Act One ────────────────────────────────────────────
+	if (operation === 'gen3ActOne') {
+		const body: Record<string, any> = {
+			driving_assetId: this.getNodeParameter('driving_assetId', i) as string,
+			character_assetId: this.getNodeParameter('character_assetId', i) as string,
+		};
+		addOptionalNumber(this, body, 'motion_multiplier', i);
+		addOptionalField(this, body, 'actOneAspectRatio', i, 'aspect_ratio');
+		addOptionalBool(this, body, 'actOneExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3/actone`, body, basePath);
+	}
+
+	// ── Gen-3 Alpha Upscale 4K ───────────────────────────────────
+	if (operation === 'gen3AlphaUpscale') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('alphaUpscaleAssetId', i) as string,
+		};
+		addOptionalBool(this, body, 'alphaUpscaleExploreMode', i, 'exploreMode');
+		return await runwayTaskPoll(this, i, `${basePath}/gen3alpha/upscale`, body, basePath);
+	}
+
+	// ── Super Slow Motion ────────────────────────────────────────
+	if (operation === 'superSlowMotion') {
+		const body: Record<string, any> = {
+			assetId: this.getNodeParameter('ssmAssetId', i) as string,
+			speed: this.getNodeParameter('ssmSpeed', i) as number,
+		};
+		const fmt = this.getNodeParameter('ssmFormat', i, 'mp4') as string;
+		if (fmt && fmt !== 'mp4') body.format = fmt;
+		return await runwayTaskPoll(this, i, `${basePath}/super_slow_motion`, body, basePath);
+	}
+
+	// ── Describe Frames ──────────────────────────────────────────
+	if (operation === 'describeFrames') {
+		const qs: Record<string, any> = {
+			taskId: this.getNodeParameter('describeTaskId', i) as string,
+		};
+		return await useApiRequest.call(this, 'GET', `${basePath}/frames/describe`, {}, qs);
+	}
+
+	// ── List LipSync Voices ──────────────────────────────────────
+	if (operation === 'listVoices') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('voicesEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/lipsync/voices`, {}, qs);
+	}
+
+	// ── Image Upscaler ───────────────────────────────────────────
+	if (operation === 'imageUpscaler') {
+		const qs: Record<string, any> = {
+			image_url: this.getNodeParameter('upscalerImageUrl', i) as string,
+			width: this.getNodeParameter('upscalerWidth', i) as number,
+			height: this.getNodeParameter('upscalerHeight', i) as number,
+		};
+		const email = this.getNodeParameter('upscalerEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/image_upscaler`, {}, qs);
+	}
+
+	// ── Transcribe ───────────────────────────────────────────────
+	if (operation === 'transcribe') {
+		const qs: Record<string, any> = {
+			assetId: this.getNodeParameter('transcribeAssetId', i) as string,
+			language: this.getNodeParameter('transcribeLanguage', i) as string,
+		};
+		return await useApiRequest.call(this, 'GET', `${basePath}/transcribe`, {}, qs);
+	}
+
+	// ── List Assets ──────────────────────────────────────────────
+	if (operation === 'listAssets') {
+		const qs: Record<string, any> = {};
+		const mediaType = this.getNodeParameter('assetsMediaType', i, '') as string;
+		if (mediaType) qs.mediaType = mediaType;
+		const offset = this.getNodeParameter('assetsOffset', i, 0) as number;
+		if (offset) qs.offset = offset;
+		const limit = this.getNodeParameter('assetsLimit', i, 10) as number;
+		if (limit) qs.limit = limit;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets`, {}, qs);
+	}
+
+	// ── Get Asset ────────────────────────────────────────────────
+	if (operation === 'getAsset') {
+		const assetId = this.getNodeParameter('singleAssetId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets/${assetId}`);
+	}
+
+	// ── Delete Asset ─────────────────────────────────────────────
+	if (operation === 'deleteAsset') {
+		const assetId = this.getNodeParameter('singleAssetId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/assets/${assetId}`);
+	}
+
+	// ── List Tasks ───────────────────────────────────────────────
+	if (operation === 'listTasks') {
+		const qs: Record<string, any> = {};
+		const offset = this.getNodeParameter('tasksOffset', i, 0) as number;
+		if (offset) qs.offset = offset;
+		const limit = this.getNodeParameter('tasksLimit', i, 10) as number;
+		if (limit) qs.limit = limit;
+		return await useApiRequest.call(this, 'GET', `${basePath}/tasks`, {}, qs);
+	}
+
+	// ── Get Task ─────────────────────────────────────────────────
+	if (operation === 'getTask') {
+		const taskId = this.getNodeParameter('singleTaskId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/tasks/${taskId}`);
+	}
+
+	// ── Delete Task ──────────────────────────────────────────────
+	if (operation === 'deleteTask') {
+		const taskId = this.getNodeParameter('singleTaskId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/tasks/${taskId}`);
+	}
+
+	// ── Get Scheduler ────────────────────────────────────────────
+	if (operation === 'getScheduler') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/scheduler`);
+	}
+
+	// ── Delete Scheduler Task ────────────────────────────────────
+	if (operation === 'deleteSchedulerTask') {
+		const taskId = this.getNodeParameter('schedulerTaskId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/scheduler/${taskId}`);
+	}
+
+	// ── Get Features ─────────────────────────────────────────────
+	if (operation === 'getFeatures') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('featuresEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/features`, {}, qs);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown Runway operation: ${operation}`, {
