@@ -19,6 +19,7 @@ export const resourceField: INodeProperties = {
 		{ name: 'InsightFaceSwap', value: 'insightfaceswap' },
 		{ name: 'Google Flow', value: 'googleFlow' },
 		{ name: 'Mureka', value: 'mureka' },
+		{ name: 'TemPolor', value: 'tempolor' },
 	],
 	default: 'midjourney',
 };
@@ -4184,5 +4185,188 @@ export const googleFlowFields: INodeProperties[] = [
 		default: '',
 		description: 'Captcha provider API key',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['configureCaptcha'] } },
+	},
+];
+
+// ──────────────────────────────────────────────────────────────
+// TemPolor operations + fields
+// ──────────────────────────────────────────────────────────────
+
+export const temporlorOperations: INodeProperties = {
+	displayName: 'Operation',
+	name: 'operation',
+	type: 'options',
+	noDataExpression: true,
+	displayOptions: { show: { resource: ['tempolor'] } },
+	options: [
+		{ name: 'Create Song', value: 'createSong', description: 'Create a song with lyrics', action: 'Create a song' },
+		{ name: 'Create Instrumental', value: 'createInstrumental', description: 'Create an instrumental track', action: 'Create instrumental' },
+		{ name: 'Split Stems', value: 'splitStems', description: 'Separate audio into stems (vocals, instruments, etc.)', action: 'Split stems' },
+		{ name: 'Get Song', value: 'getSong', description: 'Get song job status', action: 'Get song' },
+		{ name: 'Download Song', value: 'downloadSong', description: 'Download a completed song', action: 'Download song' },
+		{ name: 'List Artist Voices', value: 'listArtistVoices', description: 'List available artist voices', action: 'List artist voices' },
+	],
+	default: 'createSong',
+};
+
+export const temporlorFields: INodeProperties[] = [
+	// createSong
+	{
+		displayName: 'Prompt',
+		name: 'prompt',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Description for the song',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'Lyrics',
+		name: 'lyrics',
+		type: 'string',
+		typeOptions: { rows: 6 },
+		default: '',
+		description: 'Optional lyrics for the song',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'Style',
+		name: 'style',
+		type: 'string',
+		default: '',
+		description: 'Musical style descriptors',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'Duration',
+		name: 'duration',
+		type: 'number',
+		default: 0,
+		description: 'Song duration in seconds (0 = default)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'BPM',
+		name: 'bpm',
+		type: 'number',
+		default: 0,
+		description: 'Beats per minute (0 = auto)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific TemPolor account to use',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the job completes',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createSong'] } },
+	},
+
+	// createInstrumental
+	{
+		displayName: 'Prompt',
+		name: 'prompt',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Description for the instrumental',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+	{
+		displayName: 'Style',
+		name: 'style',
+		type: 'string',
+		default: '',
+		description: 'Musical style descriptors',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+	{
+		displayName: 'Duration',
+		name: 'duration',
+		type: 'number',
+		default: 0,
+		description: 'Track duration in seconds (0 = default)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+	{
+		displayName: 'BPM',
+		name: 'bpm',
+		type: 'number',
+		default: 0,
+		description: 'Beats per minute (0 = auto)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific TemPolor account to use',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the job completes',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['createInstrumental'] } },
+	},
+
+	// splitStems
+	{
+		displayName: 'Audio URL',
+		name: 'audioUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'URL of the audio file to split into stems',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific TemPolor account to use',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to poll until the job completes',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['splitStems'] } },
+	},
+
+	// getSong
+	{
+		displayName: 'Job ID',
+		name: 'jobId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The job ID to retrieve',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['getSong'] } },
+	},
+
+	// downloadSong
+	{
+		displayName: 'Job ID',
+		name: 'jobId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The job ID of the song to download',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['downloadSong'] } },
 	},
 ];

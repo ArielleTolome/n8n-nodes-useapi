@@ -27,6 +27,8 @@ import {
 	googleFlowFields,
 	murekaOperations,
 	murekaFields,
+	temporlorOperations,
+	temporlorFields,
 } from './UseApiDescription';
 
 export class UseApi implements INodeType {
@@ -38,7 +40,7 @@ export class UseApi implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description:
-			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Mureka)',
+			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Mureka, TemPolor)',
 		defaults: { name: 'UseAPI' },
 		inputs: ['main'],
 		outputs: ['main'],
@@ -60,6 +62,7 @@ export class UseApi implements INodeType {
 			insightfaceswapOperations,
 			googleFlowOperations,
 			murekaOperations,
+			temporlorOperations,
 			// Fields
 			...midjourneyFields,
 			...dreaminaFields,
@@ -70,6 +73,7 @@ export class UseApi implements INodeType {
 			...insightfaceswapFields,
 			...googleFlowFields,
 			...murekaFields,
+			...temporlorFields,
 		],
 	};
 
@@ -110,6 +114,9 @@ export class UseApi implements INodeType {
 						break;
 					case 'mureka':
 						responseData = await executeMureka.call(this, operation, i);
+						break;
+					case 'tempolor':
+						responseData = await executeTempolor.call(this, operation, i);
 						break;
 					default:
 						throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
@@ -1565,6 +1572,80 @@ async function executeMureka(
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown Mureka operation: ${operation}`, {
+		itemIndex: i,
+	});
+}
+
+// ──────────────────────────────────────────────────────────────
+// TemPolor
+// ──────────────────────────────────────────────────────────────
+
+async function executeTempolor(
+	this: IExecuteFunctions,
+	operation: string,
+	i: number,
+): Promise<any> {
+	const basePath = '/tempolor';
+
+	const temporlorPostAndPoll = async (
+		postEndpoint: string,
+		body: Record<string, any>,
+	): Promise<any> => {
+		const response = await useApiRequest.call(this, 'POST', postEndpoint, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const jobId = response.job_id || response.jobId || response.jobid;
+		if (wait && jobId) {
+			return await waitForJob.call(this, `${basePath}/music/${jobId}`);
+		}
+		return response;
+	};
+
+	if (operation === 'createSong') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'lyrics', i);
+		addOptionalField(this, body, 'style', i);
+		addOptionalNumber(this, body, 'duration', i);
+		addOptionalNumber(this, body, 'bpm', i);
+		addOptionalField(this, body, 'account', i);
+		return await temporlorPostAndPoll(`${basePath}/music/song`, body);
+	}
+
+	if (operation === 'createInstrumental') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'style', i);
+		addOptionalNumber(this, body, 'duration', i);
+		addOptionalNumber(this, body, 'bpm', i);
+		addOptionalField(this, body, 'account', i);
+		return await temporlorPostAndPoll(`${basePath}/music/instrumental`, body);
+	}
+
+	if (operation === 'splitStems') {
+		const body: Record<string, any> = {
+			audioUrl: this.getNodeParameter('audioUrl', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await temporlorPostAndPoll(`${basePath}/music/stems-splitter`, body);
+	}
+
+	if (operation === 'getSong') {
+		const jobId = this.getNodeParameter('jobId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/${jobId}`);
+	}
+
+	if (operation === 'downloadSong') {
+		const jobId = this.getNodeParameter('jobId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/download/${jobId}`);
+	}
+
+	if (operation === 'listArtistVoices') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/artist-voices`);
+	}
+
+	throw new NodeOperationError(this.getNode(), `Unknown TemPolor operation: ${operation}`, {
 		itemIndex: i,
 	});
 }
