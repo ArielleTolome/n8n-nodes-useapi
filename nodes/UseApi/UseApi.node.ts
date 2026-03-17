@@ -395,6 +395,7 @@ async function executeDreamina(
 		addOptionalField(this, body, 'imageRef_2', i);
 		addOptionalField(this, body, 'imageRef_3', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalBool(this, body, 'dreaminaImgAsync', i, 'async');
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -411,7 +412,9 @@ async function executeDreamina(
 			duration: this.getNodeParameter('duration', i) as number,
 		};
 		addOptionalField(this, body, 'firstFrameRef', i);
+		addOptionalNumber(this, body, 'dreaminaVideoSeed', i, 'seed');
 		addOptionalField(this, body, 'account', i);
+		addOptionalBool(this, body, 'dreaminaVideoAsync', i, 'async');
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -530,6 +533,7 @@ async function executeKling(
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
+		addOptionalBool(this, body, 'klingT2VAsync', i, 'async');
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -551,6 +555,7 @@ async function executeKling(
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
+		addOptionalBool(this, body, 'klingI2VAsync', i, 'async');
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -1709,6 +1714,7 @@ async function executeMinimax(
 		addOptionalField(this, body, 'image_url', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
+		addOptionalBool(this, body, 'mmVideoAsync', i, 'async');
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -1894,6 +1900,7 @@ async function executeGoogleFlow(
 			assetId: this.getNodeParameter('assetId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfUpvImgEmail', i, 'email');
 		addOptionalField(this, body, 'gfUpvImgReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'gfUpvImgReplyRef', i, 'replyRef');
 		addOptionalField(this, body, 'gfUpvImgCaptchaToken', i, 'captchaToken');
@@ -2096,6 +2103,7 @@ async function executeMureka(
 		addOptionalField(this, body, 'customLyrics', i);
 		addOptionalBool(this, body, 'instrumental', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalBool(this, body, 'mure_createSongAsync', i, 'async');
 		addOptionalField(this, body, 'murekacreateSongReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'murekacreateSongReplyRef', i, 'replyRef');
 		addOptionalField(this, body, 'murekacreateSongCaptchaToken', i, 'captchaToken');
@@ -2228,6 +2236,11 @@ async function executeMureka(
 		const prompt = this.getNodeParameter('murekaExtendPrompt', i, '') as string;
 		if (prompt) body.prompt = prompt;
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekaExtendSongReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekaExtendSongReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekaExtendSongCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekaExtendSongCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekaExtendSongCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/music/extend`, body);
 	}
 
@@ -2238,6 +2251,11 @@ async function executeMureka(
 		const style = this.getNodeParameter('murekaVideoStyle', i, '') as string;
 		if (style) body.style = style;
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekaVideoReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekaVideoReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekaVideoCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekaVideoCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekaVideoCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/music/video-generate`, body);
 	}
 
@@ -2279,6 +2297,7 @@ async function executeTempolor(
 		addOptionalNumber(this, body, 'duration', i);
 		addOptionalNumber(this, body, 'bpm', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalBool(this, body, 'tpSongAsync', i, 'async');
 		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
@@ -2293,6 +2312,7 @@ async function executeTempolor(
 		addOptionalNumber(this, body, 'duration', i);
 		addOptionalNumber(this, body, 'bpm', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalBool(this, body, 'tpInstrumentalAsync', i, 'async');
 		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
