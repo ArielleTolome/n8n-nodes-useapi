@@ -1768,10 +1768,8 @@ async function executeMinimax(
 
 	if (operation === 'agent') {
 		const body: Record<string, any> = {
-			message: this.getNodeParameter('message', i) as string,
+			prompt: this.getNodeParameter('message', i) as string,
 		};
-		addOptionalField(this, body, 'templateId', i);
-		addOptionalField(this, body, 'characterId', i);
 		addOptionalField(this, body, 'mmAgent_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'mmAgent_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'mmAgent_captchaOrder', i, 'captchaOrder');

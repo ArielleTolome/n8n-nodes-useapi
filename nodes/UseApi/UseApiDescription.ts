@@ -4967,22 +4967,6 @@ export const minimaxFields: INodeProperties[] = [
 		displayOptions: { show: { resource: ['minimax'], operation: ['agent'] } },
 	},
 	{
-		displayName: 'Template ID',
-		name: 'templateId',
-		type: 'string',
-		default: '',
-		description: 'Agent template ID (optional)',
-		displayOptions: { show: { resource: ['minimax'], operation: ['agent'] } },
-	},
-	{
-		displayName: 'Character ID',
-		name: 'characterId',
-		type: 'string',
-		default: '',
-		description: 'Character ID for S2V (optional)',
-		displayOptions: { show: { resource: ['minimax'], operation: ['agent'] } },
-	},
-	{
 		displayName: 'Wait for Completion',
 		name: 'waitForCompletion',
 		type: 'boolean',
