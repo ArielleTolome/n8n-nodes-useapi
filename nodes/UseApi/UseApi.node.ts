@@ -270,6 +270,9 @@ async function executeMidjourney(
 		};
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/button`, body, `${basePath}/jobs`);
 	}
 
@@ -278,6 +281,9 @@ async function executeMidjourney(
 		addOptionalField(this, body, 'url', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/describe`, body, `${basePath}/jobs`);
 	}
 
@@ -289,6 +295,9 @@ async function executeMidjourney(
 		if (dimensions) body.dimensions = dimensions;
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/blend`, body, `${basePath}/jobs`);
 	}
 
@@ -321,6 +330,9 @@ async function executeMidjourney(
 			button: this.getNodeParameter('button', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/remix`, body, `${basePath}/jobs`);
 	}
 
@@ -417,6 +429,9 @@ async function executeDreamina(
 		if (imageJobId) body.imageJobId = imageJobId;
 		if (imageUrl) body.imageUrl = imageUrl;
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'drm_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'drm_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'drm_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images/upscale`, body, `${basePath}/images`);
 	}
 
@@ -550,6 +565,11 @@ async function executeKling(
 			effect_id: this.getNodeParameter('effect_id', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/image2video-effects`, body);
 	}
 
@@ -559,6 +579,12 @@ async function executeKling(
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/extend`, body);
 	}
 
@@ -570,6 +596,11 @@ async function executeKling(
 		addOptionalField(this, body, 'text', i);
 		addOptionalField(this, body, 'voice_id', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/lipsync`, body);
 	}
 
@@ -578,6 +609,11 @@ async function executeKling(
 			task_id: this.getNodeParameter('task_id', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/add-sound`, body);
 	}
 
@@ -589,6 +625,12 @@ async function executeKling(
 			duration: this.getNodeParameter('duration', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/motion-create`, body);
 	}
 
@@ -599,6 +641,12 @@ async function executeKling(
 		};
 		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/images/kolors`, body);
 	}
 
@@ -611,6 +659,12 @@ async function executeKling(
 		};
 		addOptionalField(this, body, 'image_url', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/images/omni`, body);
 	}
 
@@ -620,6 +674,11 @@ async function executeKling(
 			cloth_image_url: this.getNodeParameter('cloth_image_url', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/images/virtual-try-on`, body);
 	}
 
@@ -658,6 +717,11 @@ async function executeKling(
 		const mode = this.getNodeParameter('mode', i, 'std') as string;
 		body.mode = mode;
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/avatars/video`, body);
 	}
 
@@ -734,6 +798,12 @@ async function executeKling(
 		const cfg = this.getNodeParameter('omniVideoCfg', i, 0) as number;
 		if (cfg) body.cfg = cfg;
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/omni`, body);
 	}
 
@@ -750,6 +820,12 @@ async function executeKling(
 		const cfg = this.getNodeParameter('i2vFramesCfg', i, 0) as number;
 		if (cfg) body.cfg = cfg;
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/image2video-frames`, body);
 	}
 
@@ -768,6 +844,12 @@ async function executeKling(
 		const ar = this.getNodeParameter('i2vElementsAspectRatio', i, '16:9') as string;
 		if (ar) body.aspect_ratio = ar;
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/videos/image2video-elements`, body);
 	}
 
@@ -786,6 +868,12 @@ async function executeKling(
 		const cfg = this.getNodeParameter('kolorsElemCfg', i, 0) as number;
 		if (cfg) body.cfg = cfg;
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'klingSeed', i, 'seed');
+		addOptionalField(this, body, 'kling_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'kling_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'kling_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'kling_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'kling_captchaOrder', i, 'captchaOrder');
 		return await klingPostAndPoll(`${basePath}/images/kolors-elements`, body);
 	}
 
@@ -856,6 +944,11 @@ async function executeRunway(
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'exploreMode', i);
 		addOptionalField(this, body, 'account', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create`, body, `${basePath}/videos`);
 	}
 
@@ -870,6 +963,11 @@ async function executeRunway(
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalBool(this, body, 'exploreMode', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images/create`, body, `${basePath}/images`);
 	}
 
@@ -880,6 +978,11 @@ async function executeRunway(
 		addOptionalField(this, body, 'audio_url', i);
 		addOptionalField(this, body, 'text', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/lipsync/create`, body, `${basePath}/videos`);
 	}
 
@@ -889,6 +992,11 @@ async function executeRunway(
 			reference_url: this.getNodeParameter('reference_url', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/gen4/act-two`, body, `${basePath}/videos`);
 	}
 
@@ -900,6 +1008,11 @@ async function executeRunway(
 		addOptionalField(this, body, 'image_url', i);
 		addOptionalField(this, body, 'last_frame_url', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/frames/create`, body, `${basePath}/videos`);
 	}
 
@@ -923,6 +1036,12 @@ async function executeRunway(
 		if (secs) body.seconds = secs;
 		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4_5/create`, body, basePath);
 	}
 
@@ -937,6 +1056,12 @@ async function executeRunway(
 		if (secs) body.seconds = secs;
 		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4turbo/create`, body, basePath);
 	}
 
@@ -952,6 +1077,12 @@ async function executeRunway(
 		if (secs) body.seconds = secs;
 		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4/create`, body, basePath);
 	}
 
@@ -961,6 +1092,12 @@ async function executeRunway(
 			assetId: this.getNodeParameter('upscaleAssetId', i) as string,
 		};
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4/upscale`, body, basePath);
 	}
 
@@ -973,6 +1110,12 @@ async function executeRunway(
 		addOptionalField(this, body, 'image_assetId', i);
 		addOptionalNumber(this, body, 'gen4Seed', i, 'seed');
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4/video`, body, basePath);
 	}
 
@@ -983,6 +1126,12 @@ async function executeRunway(
 			voiceId: this.getNodeParameter('voiceId', i) as string,
 		};
 		addOptionalBool(this, body, 'gen4ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen4/act-two-voice`, body, basePath);
 	}
 
@@ -1011,6 +1160,12 @@ async function executeRunway(
 		addOptionalBool(this, body, 'g3Static', i, 'static');
 		addOptionalNumber(this, body, 'g3Seed', i, 'seed');
 		addOptionalBool(this, body, 'g3ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/create`, body, basePath);
 	}
 
@@ -1039,6 +1194,12 @@ async function executeRunway(
 		addOptionalBool(this, body, 'g3Static', i, 'static');
 		addOptionalNumber(this, body, 'g3Seed', i, 'seed');
 		addOptionalBool(this, body, 'g3ExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3/create`, body, basePath);
 	}
 
@@ -1052,6 +1213,12 @@ async function executeRunway(
 		if (g3vSecs) body.seconds = g3vSecs;
 		addOptionalNumber(this, body, 'g3vSeed', i, 'seed');
 		addOptionalBool(this, body, 'g3vExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/video`, body, basePath);
 	}
 
@@ -1065,6 +1232,12 @@ async function executeRunway(
 		if (g3vSecs) body.seconds = g3vSecs;
 		addOptionalNumber(this, body, 'g3vSeed', i, 'seed');
 		addOptionalBool(this, body, 'g3vExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3/video`, body, basePath);
 	}
 
@@ -1076,6 +1249,12 @@ async function executeRunway(
 		addOptionalField(this, body, 'extendTextPrompt', i, 'text_prompt');
 		addOptionalNumber(this, body, 'extendSeed', i, 'seed');
 		addOptionalBool(this, body, 'extendExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/extend`, body, basePath);
 	}
 
@@ -1087,6 +1266,12 @@ async function executeRunway(
 		addOptionalField(this, body, 'extendTextPrompt', i, 'text_prompt');
 		addOptionalNumber(this, body, 'extendSeed', i, 'seed');
 		addOptionalBool(this, body, 'extendExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3/extend`, body, basePath);
 	}
 
@@ -1096,6 +1281,12 @@ async function executeRunway(
 			assetId: this.getNodeParameter('expandAssetId', i) as string,
 		};
 		addOptionalBool(this, body, 'expandExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/expand`, body, basePath);
 	}
 
@@ -1108,6 +1299,12 @@ async function executeRunway(
 		addOptionalNumber(this, body, 'motion_multiplier', i);
 		addOptionalField(this, body, 'actOneAspectRatio', i, 'aspect_ratio');
 		addOptionalBool(this, body, 'actOneExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3turbo/actone`, body, basePath);
 	}
 
@@ -1120,6 +1317,12 @@ async function executeRunway(
 		addOptionalNumber(this, body, 'motion_multiplier', i);
 		addOptionalField(this, body, 'actOneAspectRatio', i, 'aspect_ratio');
 		addOptionalBool(this, body, 'actOneExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3/actone`, body, basePath);
 	}
 
@@ -1129,6 +1332,12 @@ async function executeRunway(
 			assetId: this.getNodeParameter('alphaUpscaleAssetId', i) as string,
 		};
 		addOptionalBool(this, body, 'alphaUpscaleExploreMode', i, 'exploreMode');
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/gen3alpha/upscale`, body, basePath);
 	}
 
@@ -1140,6 +1349,12 @@ async function executeRunway(
 		};
 		const fmt = this.getNodeParameter('ssmFormat', i, 'mp4') as string;
 		if (fmt && fmt !== 'mp4') body.format = fmt;
+		addOptionalField(this, body, 'runwayEmail', i, 'email');
+		addOptionalField(this, body, 'runway_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'runway_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'runway_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'runway_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'runway_captchaOrder', i, 'captchaOrder');
 		return await runwayTaskPoll(this, i, `${basePath}/super_slow_motion`, body, basePath);
 	}
 
@@ -1287,6 +1502,10 @@ async function executePixverse(
 		};
 		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'pvCreateImageSeed', i, 'seed');
+		addOptionalField(this, body, 'pvc_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvc_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvc_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images/create`, body, `${basePath}/videos`);
 	}
 
@@ -1296,6 +1515,10 @@ async function executePixverse(
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'pvExtendSeed', i, 'seed');
+		addOptionalField(this, body, 'pve_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pve_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pve_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/videos`);
 	}
 
@@ -1304,6 +1527,9 @@ async function executePixverse(
 			videoId: this.getNodeParameter('videoId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'pvu_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvu_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvu_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/videos`);
 	}
 
@@ -1319,6 +1545,10 @@ async function executePixverse(
 		if (duration) body.duration = duration;
 		addOptionalField(this, body, 'resolution', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'pvFramesSeed', i, 'seed');
+		addOptionalField(this, body, 'pvf_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvf_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvf_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create-frames`, body, `${basePath}/videos`);
 	}
 
@@ -1330,6 +1560,9 @@ async function executePixverse(
 		addOptionalField(this, body, 'text', i);
 		addOptionalField(this, body, 'voiceId', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'pvl_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvl_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvl_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/lipsync`, body, `${basePath}/videos`);
 	}
 
@@ -1340,6 +1573,10 @@ async function executePixverse(
 		};
 		addOptionalField(this, body, 'model', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'pvModifySeed', i, 'seed');
+		addOptionalField(this, body, 'pvm_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvm_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvm_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/modify`, body, `${basePath}/videos`);
 	}
 
@@ -1364,6 +1601,10 @@ async function executePixverse(
 		if (dur) body.duration = dur;
 		const res = this.getNodeParameter('pvFusionResolution', i, '720p') as string;
 		if (res) body.resolution = res;
+		addOptionalNumber(this, body, 'pvFusionSeed', i, 'seed');
+		addOptionalField(this, body, 'pvfu_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvfu_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvfu_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create-fusion`, body, `${basePath}/videos`);
 	}
 
@@ -1379,6 +1620,10 @@ async function executePixverse(
 		if (dur) body.duration = dur;
 		const res = this.getNodeParameter('pvTransitionResolution', i, '720p') as string;
 		if (res) body.resolution = res;
+		addOptionalNumber(this, body, 'pvTransitionSeed', i, 'seed');
+		addOptionalField(this, body, 'pvt_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'pvt_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'pvt_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create-transition`, body, `${basePath}/videos`);
 	}
 
@@ -1478,6 +1723,12 @@ async function executeMinimax(
 			model: this.getNodeParameter('model', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'mmImageSeed', i, 'seed');
+		addOptionalField(this, body, 'mmImg_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'mmImg_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'mmImg_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'mmImg_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'mmImg_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images/create`, body, `${basePath}/images`);
 	}
 
@@ -1488,6 +1739,11 @@ async function executeMinimax(
 		addOptionalField(this, body, 'lyrics', i);
 		addOptionalBool(this, body, 'instrumental', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'mmMusic_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'mmMusic_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'mmMusic_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'mmMusic_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'mmMusic_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/music/create`, body, `${basePath}/videos`);
 	}
 
@@ -1497,6 +1753,9 @@ async function executeMinimax(
 		};
 		addOptionalField(this, body, 'templateId', i);
 		addOptionalField(this, body, 'characterId', i);
+		addOptionalField(this, body, 'mmAgent_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'mmAgent_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'mmAgent_captchaOrder', i, 'captchaOrder');
 		const response = await useApiRequest.call(this, 'POST', `${basePath}/agent`, body);
 		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
 		const jobId = response.jobId || response.jobid;
@@ -1578,6 +1837,11 @@ async function executeInsightfaceswap(
 			source: this.getNodeParameter('source', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'iface_replyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'iface_replyRef', i, 'replyRef');
+		addOptionalField(this, body, 'iface_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'iface_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'iface_captchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/swapface`, body, `${basePath}/jobs`);
 	}
 
@@ -1630,6 +1894,11 @@ async function executeGoogleFlow(
 			assetId: this.getNodeParameter('assetId', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfUpvImgReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'gfUpvImgReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'gfUpvImgCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfUpvImgCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfUpvImgCaptchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images/upscale`, body, `${basePath}/jobs`);
 	}
 
@@ -1664,6 +1933,12 @@ async function executeGoogleFlow(
 		const videoUrlsData = this.getNodeParameter('videoUrls', i, {}) as { items?: Array<{ url: string }> };
 		const videoUrls = videoUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
 		const body: Record<string, any> = { videoUrls };
+		addOptionalField(this, body, 'gfConcatEmail', i, 'email');
+		addOptionalField(this, body, 'gfConcatReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'gfConcatReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'gfConcatCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfConcatCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfConcatCaptchaOrder', i, 'captchaOrder');
 		return await useApiRequest.call(this, 'POST', `${basePath}/videos/concatenate`, body);
 	}
 
@@ -1673,6 +1948,7 @@ async function executeGoogleFlow(
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfExtEmail', i, 'email');
 		addOptionalField(this, body, 'gfExtReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'gfExtReplyRef', i, 'replyRef');
 		addOptionalField(this, body, 'gfExtCaptchaToken', i, 'captchaToken');
@@ -1686,6 +1962,12 @@ async function executeGoogleFlow(
 			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalNumber(this, body, 'fps', i);
+		addOptionalField(this, body, 'gfGifEmail', i, 'email');
+		addOptionalField(this, body, 'gfGifReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'gfGifReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'gfGifCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfGifCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfGifCaptchaOrder', i, 'captchaOrder');
 		return await useApiRequest.call(this, 'POST', `${basePath}/videos/gif`, body);
 	}
 
@@ -1694,6 +1976,7 @@ async function executeGoogleFlow(
 			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfUpvEmail', i, 'email');
 		addOptionalField(this, body, 'gfUpvCaptchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'gfUpvCaptchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'gfUpvCaptchaOrder', i, 'captchaOrder');
@@ -1813,6 +2096,11 @@ async function executeMureka(
 		addOptionalField(this, body, 'customLyrics', i);
 		addOptionalBool(this, body, 'instrumental', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekacreateSongReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekacreateSongReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekacreateSongCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekacreateSongCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekacreateSongCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/music/create`, body);
 	}
 
@@ -1825,6 +2113,11 @@ async function executeMureka(
 		addOptionalField(this, body, 'style', i);
 		addOptionalField(this, body, 'vocalRef', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekacreateAdvancedSongReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekacreateAdvancedSongReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekacreateAdvancedSongCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekacreateAdvancedSongCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekacreateAdvancedSongCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/music/create-advanced`, body);
 	}
 
@@ -1835,6 +2128,11 @@ async function executeMureka(
 		addOptionalField(this, body, 'model', i);
 		addOptionalField(this, body, 'style', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekacreateInstrumentalReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekacreateInstrumentalReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekacreateInstrumentalCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekacreateInstrumentalCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekacreateInstrumentalCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/music/create-instrumental`, body);
 	}
 
@@ -1853,6 +2151,11 @@ async function executeMureka(
 		};
 		addOptionalField(this, body, 'voiceId', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'murekatextToSpeechReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'murekatextToSpeechReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'murekatextToSpeechCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'murekatextToSpeechCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'murekatextToSpeechCaptchaOrder', i, 'captchaOrder');
 		return await murekaPostAndPoll(`${basePath}/speech`, body);
 	}
 
@@ -1976,6 +2279,9 @@ async function executeTempolor(
 		addOptionalNumber(this, body, 'duration', i);
 		addOptionalNumber(this, body, 'bpm', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
 		return await temporlorPostAndPoll(`${basePath}/music/song`, body);
 	}
 
@@ -1987,6 +2293,9 @@ async function executeTempolor(
 		addOptionalNumber(this, body, 'duration', i);
 		addOptionalNumber(this, body, 'bpm', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
 		return await temporlorPostAndPoll(`${basePath}/music/instrumental`, body);
 	}
 
@@ -1995,6 +2304,9 @@ async function executeTempolor(
 			audioUrl: this.getNodeParameter('audioUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'tp_captchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'tp_captchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'tp_captchaOrder', i, 'captchaOrder');
 		return await temporlorPostAndPoll(`${basePath}/music/stems-splitter`, body);
 	}
 
