@@ -295,9 +295,18 @@ async function executeMidjourney(
 	}
 
 	if (operation === 'blend') {
-		const blendUrlsStr = this.getNodeParameter('blendUrls', i) as string;
-		const blendUrls = blendUrlsStr.split(',').map((u) => u.trim()).filter(Boolean);
-		const body: Record<string, any> = { blendUrls };
+		const imageUrl1 = this.getNodeParameter('blendImageUrl1', i) as string;
+		const imageUrl2 = this.getNodeParameter('blendImageUrl2', i) as string;
+		const body: Record<string, any> = {
+			imageUrl_1: imageUrl1,
+			imageUrl_2: imageUrl2,
+		};
+		const imageUrl3 = this.getNodeParameter('blendImageUrl3', i, '') as string;
+		if (imageUrl3) body.imageUrl_3 = imageUrl3;
+		const imageUrl4 = this.getNodeParameter('blendImageUrl4', i, '') as string;
+		if (imageUrl4) body.imageUrl_4 = imageUrl4;
+		const imageUrl5 = this.getNodeParameter('blendImageUrl5', i, '') as string;
+		if (imageUrl5) body.imageUrl_5 = imageUrl5;
 		const dimensions = this.getNodeParameter('dimensions', i, 'Square') as string;
 		if (dimensions) body.dimensions = dimensions;
 		addOptionalField(this, body, 'account', i);

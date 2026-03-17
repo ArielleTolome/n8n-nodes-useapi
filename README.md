@@ -258,6 +258,11 @@ For immediate fire-and-forget without polling, use the **Async** toggle (where s
 
 | Version | Changes |
 |---------|---------|
+| v0.5.4 | Midjourney blend: replace `blendUrls` comma-string with individual `imageUrl_1`…`imageUrl_5` fields matching API format; README changelog update |
+| v0.5.3 | MiniMax uploadFile + TemPolor operations: binary upload support; Midjourney describe: fix field name |
+| v0.5.2 | MiniMax agent operation fix; asyncMode field confirmed correct across all async resources |
+| v0.5.1 | Snake_case audit — 22 API parameter naming fixes across resources (camelCase → correct snake_case field names) |
+| v0.5.0 | ESLint v10 migration fix — resolve peer dependency conflicts and update lint configuration |
 | v0.4.7 | Kling: add 15s duration + `enable_audio` field (T2V/I2V), default model → kling-v3; MiniMax: add T2V-2.3, I2V-2.3, I2V-2.3-Fast, Veo-3.1, Veo-3.1-Fast models |
 | v0.4.6 | ESLint fix + UX polish (placeholder text, description improvements across resources) |
 | v0.4.5 | Update README with complete field documentation and changelog |
