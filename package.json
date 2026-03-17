@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-useapi",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "n8n community nodes for useapi.net - AI services API (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)",
   "keywords": [
     "n8n-community-node-package",
@@ -33,9 +33,9 @@
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials package.json",
-    "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "npm run build && npm run lint -w",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint nodes credentials package.json",
+    "lintfix": "ESLINT_USE_FLAT_CONFIG=false eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build",
     "prepare": "npm run build"
   },
   "files": [
