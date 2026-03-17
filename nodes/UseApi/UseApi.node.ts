@@ -25,6 +25,8 @@ import {
 	insightfaceswapFields,
 	googleFlowOperations,
 	googleFlowFields,
+	murekaOperations,
+	murekaFields,
 } from './UseApiDescription';
 
 export class UseApi implements INodeType {
@@ -36,7 +38,7 @@ export class UseApi implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description:
-			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)',
+			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Mureka)',
 		defaults: { name: 'UseAPI' },
 		inputs: ['main'],
 		outputs: ['main'],
@@ -57,6 +59,7 @@ export class UseApi implements INodeType {
 			minimaxOperations,
 			insightfaceswapOperations,
 			googleFlowOperations,
+			murekaOperations,
 			// Fields
 			...midjourneyFields,
 			...dreaminaFields,
@@ -66,6 +69,7 @@ export class UseApi implements INodeType {
 			...minimaxFields,
 			...insightfaceswapFields,
 			...googleFlowFields,
+			...murekaFields,
 		],
 	};
 
@@ -103,6 +107,9 @@ export class UseApi implements INodeType {
 						break;
 					case 'googleFlow':
 						responseData = await executeGoogleFlow.call(this, operation, i);
+						break;
+					case 'mureka':
+						responseData = await executeMureka.call(this, operation, i);
 						break;
 					default:
 						throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
@@ -1247,6 +1254,21 @@ async function executeMinimax(
 		return await postAndMaybePoll(this, i, `${basePath}/music/create`, body, `${basePath}/videos`);
 	}
 
+	if (operation === 'agent') {
+		const body: Record<string, any> = {
+			message: this.getNodeParameter('message', i) as string,
+		};
+		addOptionalField(this, body, 'templateId', i);
+		addOptionalField(this, body, 'characterId', i);
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/agent`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const jobId = response.jobId || response.jobid;
+		if (wait && jobId) {
+			return await waitForJob.call(this, `${basePath}/agent/${jobId}`);
+		}
+		return response;
+	}
+
 	if (operation === 'getVideoJob') {
 		const jobid = this.getNodeParameter('jobid', i) as string;
 		return await useApiRequest.call(this, 'GET', `${basePath}/videos/${jobid}`);
@@ -1454,6 +1476,95 @@ async function executeGoogleFlow(
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown Google Flow operation: ${operation}`, {
+		itemIndex: i,
+	});
+}
+
+// ──────────────────────────────────────────────────────────────
+// Mureka
+// ──────────────────────────────────────────────────────────────
+
+async function executeMureka(
+	this: IExecuteFunctions,
+	operation: string,
+	i: number,
+): Promise<any> {
+	const basePath = '/mureka';
+
+	const murekaPostAndPoll = async (
+		postEndpoint: string,
+		body: Record<string, any>,
+	): Promise<any> => {
+		const response = await useApiRequest.call(this, 'POST', postEndpoint, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const songId = response.song_id || response.jobId || response.jobid;
+		if (wait && songId) {
+			return await waitForJob.call(this, `${basePath}/jobs/${songId}`);
+		}
+		return response;
+	};
+
+	if (operation === 'createSong') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'style', i);
+		addOptionalField(this, body, 'customLyrics', i);
+		addOptionalBool(this, body, 'instrumental', i);
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/music/create`, body);
+	}
+
+	if (operation === 'createAdvancedSong') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+			lyrics: this.getNodeParameter('lyrics', i) as string,
+		};
+		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'style', i);
+		addOptionalField(this, body, 'vocalRef', i);
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/music/create-advanced`, body);
+	}
+
+	if (operation === 'createInstrumental') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'style', i);
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/music/create-instrumental`, body);
+	}
+
+	if (operation === 'generateLyrics') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('prompt', i) as string,
+		};
+		addOptionalField(this, body, 'style', i);
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/music/lyrics-generate`, body);
+	}
+
+	if (operation === 'textToSpeech') {
+		const body: Record<string, any> = {
+			text: this.getNodeParameter('text', i) as string,
+		};
+		addOptionalField(this, body, 'voiceId', i);
+		addOptionalField(this, body, 'account', i);
+		return await murekaPostAndPoll(`${basePath}/speech`, body);
+	}
+
+	if (operation === 'listVoices') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/speech/voices`);
+	}
+
+	if (operation === 'listMoodsGenres') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/moods-and-genres`);
+	}
+
+	throw new NodeOperationError(this.getNode(), `Unknown Mureka operation: ${operation}`, {
 		itemIndex: i,
 	});
 }
