@@ -257,6 +257,9 @@ async function executeMidjourney(
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/jobs/imagine`, body, `${basePath}/jobs`);
 	}
 
@@ -381,6 +384,10 @@ async function executeDreamina(
 		addOptionalField(this, body, 'imageRef_3', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/images`, body, `${basePath}/images`);
 	}
 
@@ -394,6 +401,10 @@ async function executeDreamina(
 		addOptionalField(this, body, 'firstFrameRef', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos`, body, `${basePath}/videos`);
 	}
 
@@ -503,6 +514,12 @@ async function executeKling(
 		addOptionalField(this, body, 'negative_prompt', i);
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'seed', i);
+		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await klingPostAndPoll(`${basePath}/videos/text2video`, body);
 	}
 
@@ -518,6 +535,12 @@ async function executeKling(
 		addOptionalField(this, body, 'tail_image_url', i);
 		addOptionalNumber(this, body, 'cfg_scale', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'seed', i);
+		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await klingPostAndPoll(`${basePath}/videos/omni`, body);
 	}
 
@@ -1250,6 +1273,9 @@ async function executePixverse(
 		addOptionalNumber(this, body, 'seed', i);
 		addOptionalField(this, body, 'image_url', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create-v4`, body, `${basePath}/videos`);
 	}
 
@@ -1437,6 +1463,12 @@ async function executeMinimax(
 		};
 		addOptionalField(this, body, 'image_url', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalNumber(this, body, 'seed', i);
+		addOptionalField(this, body, 'replyUrl', i);
+		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'captchaToken', i);
+		addOptionalNumber(this, body, 'captchaRetry', i);
+		addOptionalField(this, body, 'captchaOrder', i);
 		return await postAndMaybePoll(this, i, `${basePath}/videos/create`, body, `${basePath}/videos`);
 	}
 
@@ -1584,7 +1616,12 @@ async function executeGoogleFlow(
 		addOptionalField(this, body, 'aspect_ratio', i);
 		addOptionalNumber(this, body, 'image_count', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfImgReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'replyRef', i);
+		addOptionalField(this, body, 'gfImgEmail', i, 'email');
+		addOptionalField(this, body, 'gfImgCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfImgCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfImgCaptchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/images`, body, `${basePath}/jobs`);
 	}
 
@@ -1606,6 +1643,20 @@ async function executeGoogleFlow(
 		const refUrls = refUrlsData.items?.map((item) => item.url).filter(Boolean) || [];
 		if (refUrls.length > 0) body.referenceUrls = refUrls;
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfEmail', i, 'email');
+		addOptionalNumber(this, body, 'gfCount', i, 'count');
+		addOptionalNumber(this, body, 'gfSeed', i, 'seed');
+		addOptionalBool(this, body, 'gfAsync', i, 'async');
+		addOptionalField(this, body, 'gfReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'gfReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'gfStartImage', i, 'startImage');
+		addOptionalField(this, body, 'gfEndImage', i, 'endImage');
+		addOptionalField(this, body, 'gfRefImage1', i, 'referenceImage_1');
+		addOptionalField(this, body, 'gfRefImage2', i, 'referenceImage_2');
+		addOptionalField(this, body, 'gfRefImage3', i, 'referenceImage_3');
+		addOptionalField(this, body, 'gfCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfCaptchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos`, body, `${basePath}/jobs`);
 	}
 
@@ -1622,6 +1673,11 @@ async function executeGoogleFlow(
 		};
 		addOptionalField(this, body, 'prompt', i);
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfExtReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'gfExtReplyRef', i, 'replyRef');
+		addOptionalField(this, body, 'gfExtCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfExtCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfExtCaptchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/jobs`);
 	}
 
@@ -1638,6 +1694,9 @@ async function executeGoogleFlow(
 			videoUrl: this.getNodeParameter('videoUrl', i) as string,
 		};
 		addOptionalField(this, body, 'account', i);
+		addOptionalField(this, body, 'gfUpvCaptchaToken', i, 'captchaToken');
+		addOptionalNumber(this, body, 'gfUpvCaptchaRetry', i, 'captchaRetry');
+		addOptionalField(this, body, 'gfUpvCaptchaOrder', i, 'captchaOrder');
 		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/jobs`);
 	}
 
