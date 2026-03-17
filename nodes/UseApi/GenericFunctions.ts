@@ -24,7 +24,7 @@ export async function useApiRequest(
 	endpoint: string,
 	body: IDataObject = {},
 	qs: IDataObject = {},
-): Promise<any> {
+): Promise<IDataObject> {
 	const credentials = await this.getCredentials('useApiCredentials');
 	const baseUrl = credentials.baseUrl as string;
 
@@ -67,7 +67,7 @@ export async function waitForJob(
 	statusPath: string = 'status',
 	intervalMs: number = 3000,
 	maxWaitMs: number = 300000,
-): Promise<any> {
+): Promise<IDataObject> {
 	const startTime = Date.now();
 
 	while (Date.now() - startTime < maxWaitMs) {
