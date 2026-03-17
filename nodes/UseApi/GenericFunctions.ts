@@ -10,6 +10,43 @@ import type {
 import { NodeApiError } from 'n8n-workflow';
 
 /**
+ * Strips Authorization headers from error objects before surfacing them via NodeApiError.
+ * Prevents API tokens from leaking into n8n execution logs and the UI error display.
+ */
+function sanitizeError(error: unknown): JsonObject {
+	if (!error || typeof error !== 'object') return error as JsonObject;
+	const err = { ...(error as Record<string, unknown>) };
+
+	const stripAuth = (obj: Record<string, unknown>): Record<string, unknown> => {
+		const copy = { ...obj };
+		if (copy.headers && typeof copy.headers === 'object') {
+			const headers = { ...(copy.headers as Record<string, unknown>) };
+			delete headers['Authorization'];
+			delete headers['authorization'];
+			copy.headers = headers;
+		}
+		return copy;
+	};
+
+	// axios-style errors include config.headers
+	if (err.config && typeof err.config === 'object') {
+		err.config = stripAuth(err.config as Record<string, unknown>);
+	}
+	// request-promise-style errors include options.headers
+	if (err.options && typeof err.options === 'object') {
+		err.options = stripAuth(err.options as Record<string, unknown>);
+	}
+	// Some wrappers nest under request
+	if (err.request && typeof err.request === 'object') {
+		const req = err.request as Record<string, unknown>;
+		if (req.headers) {
+			err.request = stripAuth(req);
+		}
+	}
+	return err as JsonObject;
+}
+
+/**
  * Posts a binary file to the useapi.net API using raw binary body.
  * Used for endpoints that accept file uploads (MiniMax /files, TemPolor /midi, etc.)
  *
@@ -49,7 +86,7 @@ export async function useApiBinaryUpload(
 			body: buffer,
 		})) as IDataObject;
 	} catch (error) {
-		throw new NodeApiError(this.getNode(), error as JsonObject);
+		throw new NodeApiError(this.getNode(), sanitizeError(error));
 	}
 }
 
@@ -91,7 +128,7 @@ export async function useApiRequest(
 	try {
 		return await this.helpers.request(options);
 	} catch (error) {
-		throw new NodeApiError(this.getNode(), error as JsonObject);
+		throw new NodeApiError(this.getNode(), sanitizeError(error));
 	}
 }
 

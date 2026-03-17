@@ -247,6 +247,17 @@ For immediate fire-and-forget without polling, use the **Async** toggle (where s
 
 ---
 
+## Rate Limits
+
+The useapi.net API enforces rate limits per account/plan. When the limit is exceeded, the API returns HTTP **429** or **402 (quota exceeded)**.
+
+Recommendations for high-volume workflows:
+- Disable **Wait for Completion** and poll manually to avoid holding long-running requests.
+- Add a **Wait** node between batches to control request cadence.
+- Check your plan limits at [useapi.net](https://useapi.net).
+
+---
+
 ## Links
 
 - [useapi.net Documentation](https://useapi.net/docs)
@@ -258,6 +269,7 @@ For immediate fire-and-forget without polling, use the **Async** toggle (where s
 
 | Version | Changes |
 |---------|---------|
+| v0.5.5 | Security audit — sanitize error objects to prevent API token leaks in error messages; add Rate Limits section to README |
 | v0.5.4 | Midjourney blend: replace `blendUrls` comma-string with individual `imageUrl_1`…`imageUrl_5` fields matching API format; README changelog update |
 | v0.5.3 | MiniMax uploadFile + TemPolor operations: binary upload support; Midjourney describe: fix field name |
 | v0.5.2 | MiniMax agent operation fix; asyncMode field confirmed correct across all async resources |
