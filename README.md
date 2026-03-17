@@ -127,6 +127,10 @@ Disable **Wait for Completion** to get the initial job response immediately, the
 
 | Version | Changes |
 |---------|---------|
+| v0.3.9 | TemPolor: Account management (add, get, list, delete), Delete Song, MIDI upload/list/delete, Voice cloning (clone, list, delete); README updated |
+| v0.3.8 | MiniMax: Add/Delete Account, Cancel Video, List Agent Templates, List Characters, Upload File; Mureka: Account management, Song management (get, list, delete, download, extend), Generate Music Video |
+| v0.3.7 | PixVerse: Create Fusion, Create Transition, List LipSync Voices, List Effects, Get/Delete Video, Get/Delete Image, Account management (add, get, delete), Cancel Job |
+| v0.3.6 | Kling: Omni Video (O1), Image-to-Video First+Last Frames, Image-to-Video Elements, KOLORS Elements image, List Elements/Tags/Voices, Account management (add, get, delete), Asset management improvements |
 | v0.3.5 | README: add Mureka, TemPolor, Google Flow video docs; complete changelog |
 | v0.3.4 | New resource: TemPolor (Create Song, Instrumental, Split Stems, Get/Download Song, List Artist Voices) |
 | v0.3.3 | MiniMax: Agent operation; New resource: Mureka (Create Song, Advanced Song, Instrumental, Generate Lyrics, TTS, List Voices/Moods) |

@@ -1953,6 +1953,69 @@ async function executeTempolor(
 		return await useApiRequest.call(this, 'GET', `${basePath}/music/artist-voices`);
 	}
 
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			token: this.getNodeParameter('tpAccountToken', i) as string,
+		};
+		const maxJobs = this.getNodeParameter('tpAccountMaxJobs', i, 0) as number;
+		if (maxJobs) body.maxJobs = maxJobs;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const userId = this.getNodeParameter('tpAccountUserId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${userId}`);
+	}
+
+	if (operation === 'listAccounts') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const userId = this.getNodeParameter('tpAccountUserId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${userId}`);
+	}
+
+	if (operation === 'deleteSong') {
+		const jobId = this.getNodeParameter('tpDeleteSongJobId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/music/${jobId}`);
+	}
+
+	if (operation === 'uploadMidi') {
+		const body: Record<string, any> = {
+			midiUrl: this.getNodeParameter('tpMidiUrl', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/music/midi`, body);
+	}
+
+	if (operation === 'listMidi') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/midi`);
+	}
+
+	if (operation === 'deleteMidi') {
+		const midiId = this.getNodeParameter('tpMidiId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/music/midi/${midiId}`);
+	}
+
+	if (operation === 'cloneVoice') {
+		const body: Record<string, any> = {
+			audioUrl: this.getNodeParameter('tpCloneAudioUrl', i) as string,
+			name: this.getNodeParameter('tpCloneVoiceName', i) as string,
+		};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/music/cloned-voices`, body);
+	}
+
+	if (operation === 'listClonedVoices') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/cloned-voices`);
+	}
+
+	if (operation === 'deleteClonedVoice') {
+		const voiceId = this.getNodeParameter('tpClonedVoiceId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/music/cloned-voices/${voiceId}`);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown TemPolor operation: ${operation}`, {
 		itemIndex: i,
 	});

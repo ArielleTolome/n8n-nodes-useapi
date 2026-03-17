@@ -5144,6 +5144,17 @@ export const temporlorOperations: INodeProperties = {
 		{ name: 'Get Song', value: 'getSong', description: 'Get song job status', action: 'Get song' },
 		{ name: 'Download Song', value: 'downloadSong', description: 'Download a completed song', action: 'Download song' },
 		{ name: 'List Artist Voices', value: 'listArtistVoices', description: 'List available artist voices', action: 'List artist voices' },
+		{ name: 'Add Account', value: 'addAccount', description: 'Add a TemPolor account', action: 'Add account' },
+		{ name: 'Get Account', value: 'getAccount', description: 'Get a TemPolor account', action: 'Get account' },
+		{ name: 'List Accounts', value: 'listAccounts', description: 'List all TemPolor accounts', action: 'List accounts' },
+		{ name: 'Delete Account', value: 'deleteAccount', description: 'Delete a TemPolor account', action: 'Delete account' },
+		{ name: 'Delete Song', value: 'deleteSong', description: 'Delete a song', action: 'Delete song' },
+		{ name: 'Upload MIDI', value: 'uploadMidi', description: 'Upload a MIDI file', action: 'Upload MIDI' },
+		{ name: 'List MIDI', value: 'listMidi', description: 'List uploaded MIDI files', action: 'List MIDI' },
+		{ name: 'Delete MIDI', value: 'deleteMidi', description: 'Delete a MIDI file', action: 'Delete MIDI' },
+		{ name: 'Clone Voice', value: 'cloneVoice', description: 'Clone a voice from an audio sample', action: 'Clone voice' },
+		{ name: 'List Cloned Voices', value: 'listClonedVoices', description: 'List cloned voices', action: 'List cloned voices' },
+		{ name: 'Delete Cloned Voice', value: 'deleteClonedVoice', description: 'Delete a cloned voice', action: 'Delete cloned voice' },
 	],
 	default: 'createSong',
 };
@@ -5307,5 +5318,116 @@ export const temporlorFields: INodeProperties[] = [
 		default: '',
 		description: 'The job ID of the song to download',
 		displayOptions: { show: { resource: ['tempolor'], operation: ['downloadSong'] } },
+	},
+
+	// addAccount (tempolor)
+	{
+		displayName: 'Token',
+		name: 'tpAccountToken',
+		type: 'string',
+		typeOptions: { password: true },
+		required: true,
+		default: '',
+		description: 'TemPolor auth token',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Jobs',
+		name: 'tpAccountMaxJobs',
+		type: 'number',
+		default: 0,
+		description: 'Maximum concurrent jobs (0 = default)',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['addAccount'] } },
+	},
+
+	// getAccount / deleteAccount (tempolor)
+	{
+		displayName: 'User ID',
+		name: 'tpAccountUserId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'TemPolor account user ID',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['getAccount', 'deleteAccount'] } },
+	},
+
+	// deleteSong (tempolor)
+	{
+		displayName: 'Job ID',
+		name: 'tpDeleteSongJobId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The job ID of the song to delete',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['deleteSong'] } },
+	},
+
+	// uploadMidi
+	{
+		displayName: 'MIDI URL',
+		name: 'tpMidiUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'URL of MIDI file to upload',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['uploadMidi'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific TemPolor account to use',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['uploadMidi'] } },
+	},
+
+	// deleteMidi
+	{
+		displayName: 'MIDI ID',
+		name: 'tpMidiId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The MIDI file ID to delete',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['deleteMidi'] } },
+	},
+
+	// cloneVoice
+	{
+		displayName: 'Audio URL',
+		name: 'tpCloneAudioUrl',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'URL of voice sample to clone from',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
+	},
+	{
+		displayName: 'Name',
+		name: 'tpCloneVoiceName',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Name for the cloned voice',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
+	},
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific TemPolor account to use',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['cloneVoice'] } },
+	},
+
+	// deleteClonedVoice
+	{
+		displayName: 'Voice ID',
+		name: 'tpClonedVoiceId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The cloned voice ID to delete',
+		displayOptions: { show: { resource: ['tempolor'], operation: ['deleteClonedVoice'] } },
 	},
 ];
