@@ -258,6 +258,8 @@ async function executeMidjourney(
 		const body: Record<string, any> = {
 			prompt: this.getNodeParameter('prompt', i) as string,
 		};
+		addOptionalField(this, body, 'sref', i);
+		addOptionalField(this, body, 'cref', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'replyRef', i);
@@ -1586,6 +1588,7 @@ async function executePixverse(
 			prompt: this.getNodeParameter('prompt', i) as string,
 		};
 		addOptionalField(this, body, 'model', i);
+		addOptionalField(this, body, 'pvm_negative_prompt', i, 'negative_prompt');
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'pvModifySeed', i, 'seed');
 		addOptionalField(this, body, 'pvm_captchaToken', i, 'captchaToken');

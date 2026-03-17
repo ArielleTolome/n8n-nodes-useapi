@@ -63,6 +63,22 @@ export const midjourneyFields: INodeProperties[] = [
 		displayOptions: { show: { resource: ['midjourney'], operation: ['imagine'] } },
 	},
 	{
+		displayName: 'Style Reference URL',
+		name: 'sref',
+		type: 'string',
+		default: '',
+		description: 'Style reference URL (--sref). Controls the visual style of the output.',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['imagine'] } },
+	},
+	{
+		displayName: 'Character Reference URL',
+		name: 'cref',
+		type: 'string',
+		default: '',
+		description: 'Character reference URL (--cref). Maintains consistent character appearance.',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['imagine'] } },
+	},
+	{
 		displayName: 'Account',
 		name: 'account',
 		type: 'string',
@@ -4184,6 +4200,14 @@ export const pixverseFields: INodeProperties[] = [
 		],
 		default: 'v5.6',
 		description: 'Video generation model (optional)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
+	},
+	{
+		displayName: 'Negative Prompt',
+		name: 'pvm_negative_prompt',
+		type: 'string',
+		default: '',
+		description: 'What to avoid in the modified video',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['modifyVideo'] } },
 	},
 	{
