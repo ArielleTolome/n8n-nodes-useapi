@@ -74,3 +74,148 @@ describe('UseApi node', () => {
 		expect(typeof node.description.version === 'number' || Array.isArray(node.description.version)).toBe(true);
 	});
 });
+
+// ---------------------------------------------------------------------------
+// Resource + operation coverage
+// ---------------------------------------------------------------------------
+
+describe('UseApi node — resource and operation coverage', () => {
+	let node: UseApi;
+	let allProperties: INodeProperties[];
+
+	beforeEach(() => {
+		node = new UseApi();
+		allProperties = node.description.properties as INodeProperties[];
+	});
+
+	/** Helper: collect operation values for a given resource slug */
+	function operationsFor(resource: string): string[] {
+		return allProperties
+			.filter(
+				(p) =>
+					p.name === 'operation' &&
+					(p.displayOptions?.show as Record<string, string[]> | undefined)?.resource?.includes(
+						resource,
+					),
+			)
+			.flatMap((p) => (p.options as Array<{ value: string }>)?.map((o) => o.value) ?? []);
+	}
+
+	const expectedResources = ['midjourney', 'dreamina', 'kling', 'runway', 'minimax', 'tempolor'];
+
+	it.each(expectedResources)(
+		'resource "%s" exists in the resource dropdown',
+		(resource) => {
+			const resourceProp = allProperties.find((p) => p.name === 'resource');
+			const options = resourceProp?.options as Array<{ value: string }>;
+			const values = options.map((o) => o.value);
+			expect(values).toContain(resource);
+		},
+	);
+
+	it.each(expectedResources)(
+		'resource "%s" has at least one operation',
+		(resource) => {
+			const ops = operationsFor(resource);
+			expect(ops.length).toBeGreaterThan(0);
+		},
+	);
+
+	it('midjourney resource has imagine operation', () => {
+		const ops = operationsFor('midjourney');
+		expect(ops).toContain('imagine');
+	});
+
+	it('midjourney resource has button operation', () => {
+		const ops = operationsFor('midjourney');
+		expect(ops).toContain('button');
+	});
+
+	it('dreamina resource has generateImage operation', () => {
+		const ops = operationsFor('dreamina');
+		expect(ops).toContain('generateImage');
+	});
+
+	it('kling resource has textToVideo operation', () => {
+		const ops = operationsFor('kling');
+		expect(ops).toContain('textToVideo');
+	});
+});
+
+// ---------------------------------------------------------------------------
+// waitForCompletion field
+// ---------------------------------------------------------------------------
+
+describe('UseApi node — waitForCompletion fields', () => {
+	let node: UseApi;
+	let allProperties: INodeProperties[];
+
+	beforeEach(() => {
+		node = new UseApi();
+		allProperties = node.description.properties as INodeProperties[];
+	});
+
+	it('has at least one waitForCompletion boolean field', () => {
+		const fields = allProperties.filter((p) => p.name === 'waitForCompletion');
+		expect(fields.length).toBeGreaterThan(0);
+		// Every waitForCompletion field should be a boolean
+		for (const f of fields) {
+			expect(f.type).toBe('boolean');
+		}
+	});
+
+	it('waitForCompletion exists on midjourney imagine operation', () => {
+		const fields = allProperties.filter(
+			(p) =>
+				p.name === 'waitForCompletion' &&
+				(p.displayOptions?.show as Record<string, string[]> | undefined)?.resource?.includes(
+					'midjourney',
+				) &&
+				(p.displayOptions?.show as Record<string, string[]> | undefined)?.operation?.includes(
+					'imagine',
+				),
+		);
+		expect(fields.length).toBeGreaterThan(0);
+	});
+
+	it('waitForCompletion exists on midjourney button operation', () => {
+		const fields = allProperties.filter(
+			(p) =>
+				p.name === 'waitForCompletion' &&
+				(p.displayOptions?.show as Record<string, string[]> | undefined)?.resource?.includes(
+					'midjourney',
+				) &&
+				(p.displayOptions?.show as Record<string, string[]> | undefined)?.operation?.includes(
+					'button',
+				),
+		);
+		expect(fields.length).toBeGreaterThan(0);
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Credentials
+// ---------------------------------------------------------------------------
+
+describe('UseApi node — credentials', () => {
+	it('credentials array is non-empty', () => {
+		const node = new UseApi();
+		const creds = node.description.credentials as Array<{ name: string; required?: boolean }>;
+		expect(Array.isArray(creds)).toBe(true);
+		expect(creds.length).toBeGreaterThan(0);
+	});
+
+	it('uses credential type "useApiCredentials"', () => {
+		const node = new UseApi();
+		const creds = node.description.credentials as Array<{ name: string; required?: boolean }>;
+		const names = creds.map((c) => c.name);
+		expect(names).toContain('useApiCredentials');
+	});
+
+	it('useApiCredentials credential is marked required', () => {
+		const node = new UseApi();
+		const creds = node.description.credentials as Array<{ name: string; required?: boolean }>;
+		const cred = creds.find((c) => c.name === 'useApiCredentials');
+		expect(cred?.required).toBe(true);
+	});
+});
