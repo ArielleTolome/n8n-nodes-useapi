@@ -47,6 +47,10 @@ export const midjourneyOperations: INodeProperties = {
 		{ name: 'List Jobs', value: 'listJobs', description: 'List jobs', action: 'List jobs' },
 		{ name: 'Cancel Job', value: 'cancelJob', description: 'Cancel a running job', action: 'Cancel a job' },
 		{ name: 'List Accounts', value: 'listAccounts', description: 'List all Midjourney accounts', action: 'List accounts' },
+		{ name: 'Info', value: 'info', description: 'Get account info (subscription, usage)', action: 'Get account info' },
+		{ name: 'Fast Mode', value: 'fast', description: 'Switch account to fast mode', action: 'Switch to fast mode' },
+		{ name: 'Relax Mode', value: 'relax', description: 'Switch account to relax mode', action: 'Switch to relax mode' },
+		{ name: 'Turbo Mode', value: 'turbo', description: 'Switch account to turbo mode', action: 'Switch to turbo mode' },
 	],
 	default: 'imagine',
 };
@@ -556,6 +560,16 @@ export const midjourneyFields: INodeProperties[] = [
 		default: '',
 		description: 'The job ID to cancel',
 		displayOptions: { show: { resource: ['midjourney'], operation: ['cancelJob'] } },
+	},
+
+	// info / fast / relax / turbo (v3 new operations)
+	{
+		displayName: 'Account',
+		name: 'account',
+		type: 'string',
+		default: '',
+		description: 'Specific Midjourney account to use',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['info', 'fast', 'relax', 'turbo'] } },
 	},
 ];
 

@@ -253,7 +253,7 @@ async function executeMidjourney(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/midjourney';
+	const basePath = '/v3/midjourney';
 
 	if (operation === 'imagine') {
 		const body: Record<string, any> = {
@@ -383,6 +383,31 @@ async function executeMidjourney(
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
 	}
 
+	// Midjourney v3 new operations
+	if (operation === 'info') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'account', i);
+		return await postAndMaybePoll(this, i, `${basePath}/jobs/info`, body, `${basePath}/jobs`);
+	}
+
+	if (operation === 'fast') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/jobs/fast`, body);
+	}
+
+	if (operation === 'relax') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/jobs/relax`, body);
+	}
+
+	if (operation === 'turbo') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'account', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/jobs/turbo`, body);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown Midjourney operation: ${operation}`, {
 		itemIndex: i,
 	});
@@ -397,7 +422,7 @@ async function executeDreamina(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/dreamina';
+	const basePath = '/v1/dreamina';
 
 	if (operation === 'generateImage') {
 		const body: Record<string, any> = {
@@ -521,7 +546,7 @@ async function executeKling(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/kling';
+	const basePath = '/v1/kling';
 
 	const klingPostAndPoll = async (
 		postEndpoint: string,
@@ -947,7 +972,7 @@ async function executeRunway(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/runwayml';
+	const basePath = '/v1/runwayml';
 
 	if (operation === 'createVideo') {
 		const body: Record<string, any> = {
@@ -1499,7 +1524,7 @@ async function executePixverse(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/pixverse';
+	const basePath = '/v2/pixverse';
 
 	if (operation === 'createVideo') {
 		const body: Record<string, any> = {
@@ -1724,7 +1749,7 @@ async function executeMinimax(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/minimax';
+	const basePath = '/v1/minimax';
 
 	if (operation === 'createVideo') {
 		const body: Record<string, any> = {
@@ -1858,7 +1883,7 @@ async function executeInsightfaceswap(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/faceswap';
+	const basePath = '/v1/faceswap';
 
 	if (operation === 'swapFace') {
 		const body: Record<string, any> = {
@@ -1899,7 +1924,7 @@ async function executeGoogleFlow(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/google-flow';
+	const basePath = '/v1/google-flow';
 
 	if (operation === 'generateImage') {
 		const body: Record<string, any> = {
@@ -2102,7 +2127,7 @@ async function executeMureka(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/mureka';
+	const basePath = '/v1/mureka';
 
 	const murekaPostAndPoll = async (
 		postEndpoint: string,
@@ -2296,7 +2321,7 @@ async function executeTempolor(
 	operation: string,
 	i: number,
 ): Promise<any> {
-	const basePath = '/tempolor';
+	const basePath = '/v1/tempolor';
 
 	const temporlorPostAndPoll = async (
 		postEndpoint: string,

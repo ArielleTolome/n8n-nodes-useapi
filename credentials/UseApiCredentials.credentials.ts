@@ -26,7 +26,7 @@ export class UseApiCredentials implements ICredentialType {
 			displayName: 'Base URL',
 			name: 'baseUrl',
 			type: 'hidden',
-			default: 'https://api.useapi.net/v1',
+			default: 'https://api.useapi.net',
 		},
 	];
 
@@ -41,8 +41,8 @@ export class UseApiCredentials implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.useapi.net/v1',
-			url: '/midjourney/accounts',
+			baseURL: 'https://api.useapi.net',
+			url: '/v3/midjourney/accounts',
 			method: 'GET',
 		},
 	};

@@ -56,6 +56,16 @@ function sanitizeError(error: unknown): JsonObject {
  * @param qs - Query string parameters (e.g. { account: "...", name: "..." })
  * @returns The parsed JSON response from the API
  */
+/**
+ * Returns the base URL with any trailing version suffix stripped.
+ * e.g. 'https://api.useapi.net/v1' → 'https://api.useapi.net'
+ * This allows each resource to specify its own versioned path prefix.
+ */
+function getBaseUrl(credentials: Record<string, unknown>): string {
+	const url = credentials.baseUrl as string;
+	return url.replace(/\/v\d+$/, '');
+}
+
 export async function useApiBinaryUpload(
 	this: IExecuteFunctions,
 	endpoint: string,
@@ -64,7 +74,7 @@ export async function useApiBinaryUpload(
 	qs: IDataObject = {},
 ): Promise<IDataObject> {
 	const credentials = await this.getCredentials('useApiCredentials');
-	const baseUrl = credentials.baseUrl as string;
+	const baseUrl = getBaseUrl(credentials);
 
 	const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
 	const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
@@ -107,7 +117,7 @@ export async function useApiRequest(
 	qs: IDataObject = {},
 ): Promise<IDataObject> {
 	const credentials = await this.getCredentials('useApiCredentials');
-	const baseUrl = credentials.baseUrl as string;
+	const baseUrl = getBaseUrl(credentials);
 
 	const options: IRequestOptions = {
 		method,
