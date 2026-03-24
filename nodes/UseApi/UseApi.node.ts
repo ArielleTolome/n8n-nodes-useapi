@@ -1976,6 +1976,16 @@ async function executeMinimax(
 		return await useApiBinaryUpload.call(this, `${basePath}/files/`, binaryPropertyName, i, qs);
 	}
 
+	if (operation === 'deleteFile') {
+		const fileId = this.getNodeParameter('mmFileId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/files/${fileId}`);
+	}
+
+	if (operation === 'deleteImage') {
+		const imageId = this.getNodeParameter('mmImageId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/images/${imageId}`);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown MiniMax operation: ${operation}`, {
 		itemIndex: i,
 	});

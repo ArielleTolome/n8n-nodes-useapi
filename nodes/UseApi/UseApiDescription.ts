@@ -4784,6 +4784,8 @@ export const minimaxOperations: INodeProperties = {
 		{ name: 'List Agent Templates', value: 'listAgentTemplates', description: 'List available agent templates', action: 'List agent templates' },
 		{ name: 'List Characters', value: 'listCharacters', description: 'List available characters', action: 'List characters' },
 		{ name: 'Upload File', value: 'uploadFile', description: 'Upload a file for use in generation', action: 'Upload file' },
+		{ name: 'Delete File', value: 'deleteFile', description: 'Delete an uploaded file', action: 'Delete file' },
+		{ name: 'Delete Image', value: 'deleteImage', description: 'Delete a generated image', action: 'Delete image' },
 	],
 	default: 'createVideo',
 };
@@ -5238,6 +5240,28 @@ export const minimaxFields: INodeProperties[] = [
 		default: '',
 		description: 'Specific MiniMax account to use',
 		displayOptions: { show: { resource: ['minimax'], operation: ['uploadFile'] } },
+	},
+
+	// deleteFile
+	{
+		displayName: 'File ID',
+		name: 'mmFileId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The fileID to delete (from POST /files response)',
+		displayOptions: { show: { resource: ['minimax'], operation: ['deleteFile'] } },
+	},
+
+	// deleteImage
+	{
+		displayName: 'Image ID',
+		name: 'mmImageId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The imageId to delete (from POST /images/create response)',
+		displayOptions: { show: { resource: ['minimax'], operation: ['deleteImage'] } },
 	},
 ];
 
