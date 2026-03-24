@@ -1548,6 +1548,35 @@ async function executeRunway(
 // PixVerse
 // ──────────────────────────────────────────────────────────────
 
+/**
+ * PixVerse video generation uses video_status_final / video_status_name instead of status.
+ * Poll GET /videos/{video_id} until video_status_final = true.
+ */
+async function pixverseVideoPoll(
+	ctx: IExecuteFunctions,
+	i: number,
+	postEndpoint: string,
+	body: Record<string, any>,
+	basePath: string,
+): Promise<any> {
+	const asyncMode = ctx.getNodeParameter('asyncMode', i, false) as boolean;
+	if (asyncMode) body.async = true;
+	const response = await useApiRequest.call(ctx, 'POST', postEndpoint, body);
+	const wait = ctx.getNodeParameter('waitForCompletion', i, true) as boolean;
+	const videoId = response.video_id as string | undefined;
+	if (!wait || !videoId) return response;
+	const startTime = Date.now();
+	const maxWaitMs = 300000;
+	while (Date.now() - startTime < maxWaitMs) {
+		const poll = await useApiRequest.call(ctx, 'GET', `${basePath}/videos/${videoId}`);
+		if (poll.video_status_final === true || poll.video_status_name === 'COMPLETED') return poll;
+		if (poll.video_status_name === 'MODERATED') throw new NodeOperationError(ctx.getNode(), 'PixVerse video moderated');
+		if (poll.video_status_name === 'FAILED') throw new NodeOperationError(ctx.getNode(), `PixVerse video failed: ${poll.error || ''}`);
+		await new Promise((resolve) => setTimeout(resolve, 3000));
+	}
+	throw new NodeOperationError(ctx.getNode(), 'PixVerse video polling timed out');
+}
+
 async function executePixverse(
 	this: IExecuteFunctions,
 	operation: string,
@@ -1571,7 +1600,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'captchaToken', i);
 		addOptionalNumber(this, body, 'captchaRetry', i);
 		addOptionalField(this, body, 'captchaOrder', i);
-		return await postAndMaybePoll(this, i, `${basePath}/videos/create-v4`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/create-v4`, body, basePath);
 	}
 
 	if (operation === 'createImage') {
@@ -1619,7 +1648,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pve_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pve_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pve_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/extend`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/extend`, body, basePath);
 	}
 
 	if (operation === 'upscaleVideo') {
@@ -1630,7 +1659,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvu_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvu_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvu_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/upscale`, body, basePath);
 	}
 
 	if (operation === 'createFrames') {
@@ -1649,7 +1678,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvf_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvf_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvf_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/create-frames`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/create-frames`, body, basePath);
 	}
 
 	if (operation === 'lipSyncVideo') {
@@ -1663,7 +1692,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvl_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvl_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvl_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/lipsync`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/lipsync`, body, basePath);
 	}
 
 	if (operation === 'modifyVideo') {
@@ -1678,7 +1707,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvm_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvm_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvm_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/modify`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/modify`, body, basePath);
 	}
 
 	if (operation === 'getJob') {
@@ -1706,7 +1735,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvfu_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvfu_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvfu_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/create-fusion`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/create-fusion`, body, basePath);
 	}
 
 	if (operation === 'createTransition') {
@@ -1725,7 +1754,7 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvt_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvt_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvt_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/videos/create-transition`, body, `${basePath}/videos`);
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/create-transition`, body, basePath);
 	}
 
 	if (operation === 'listLipSyncVoices') {
