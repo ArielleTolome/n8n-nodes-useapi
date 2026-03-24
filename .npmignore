@@ -1,3 +1,4 @@
+src/
 nodes/
 credentials/
 *.ts
@@ -5,11 +6,16 @@ credentials/
 !dist/**/*.d.ts
 tsconfig.json
 .eslintrc.js
+eslint.config.mjs
 .prettierrc
 gulpfile.js
 node_modules/
 .git/
 .gitignore
 __tests__/
-__tests__/integration/
 jest.config.*
+dist/__tests__/
+dist/**/*.test.js
+dist/**/*.test.js.map
+dist/**/*.test.d.ts
+dist/**/integration/
