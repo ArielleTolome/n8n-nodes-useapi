@@ -4,6 +4,21 @@ n8n community nodes for [useapi.net](https://useapi.net) — a unified REST API 
 
 > **Note:** The npm package name `n8n-nodes-useapi` is taken by an unrelated package. Install from GitHub (see below).
 
+## API Version Support (v0.6.7+)
+
+| Resource | API Version | Notes |
+|----------|-------------|-------|
+| **Midjourney** | **v3** | `/v3/midjourney/...` — Latest v3 API with video support, CAPTCHA solver, info/fast/relax/turbo ops |
+| **PixVerse** | **v2** | `/v2/pixverse/...` — Models v5.6, v5.5, v5, v5-fast; images with 7 models |
+| Kling | v1 | `/v1/kling/...` — Models v3, O1, 2.6, 2.5+ with native audio, avatars, elements |
+| Runway | v1 | `/v1/runwayml/...` — Gen-4.5, Gen-4, unified videos/create and images/create |
+| MiniMax | v1 | `/v1/minimax/...` — Hailuo 01/02/2.3, Sora 2, Veo 3.1, unified endpoints |
+| Dreamina | v1 | `/v1/dreamina/...` — Seedance 2.0, Seedream 5.0 Lite |
+| Google Flow | v1 | `/v1/google-flow/...` — Veo 3.1, Imagen 4, Nano Banana series |
+| InsightFaceSwap | v1 | `/v1/faceswap/...` |
+| Mureka | v1 | `/v1/mureka/...` — SkyMusic 2.0, TTS |
+| TemPolor | v1 | `/v1/tempolor/...` — Royalty-free music |
+
 ---
 
 ## Examples
