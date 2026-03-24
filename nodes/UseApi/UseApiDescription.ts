@@ -3765,6 +3765,9 @@ export const pixverseOperations: INodeProperties = {
 		{ name: 'Get Account', value: 'getAccount', description: 'Get a PixVerse account', action: 'Get account' },
 		{ name: 'Delete Account', value: 'deleteAccount', description: 'Delete a PixVerse account', action: 'Delete account' },
 		{ name: 'Cancel Job', value: 'cancelJob', description: 'Cancel a running job', action: 'Cancel job' },
+		{ name: 'Get Features', value: 'getFeatures', description: 'Get PixVerse account features and credits', action: 'Get features' },
+		{ name: 'List Images', value: 'listImages', description: 'List generated images', action: 'List images' },
+		{ name: 'List Videos', value: 'listVideos', description: 'List generated videos', action: 'List videos' },
 	],
 	default: 'createVideo',
 };
@@ -4720,6 +4723,40 @@ export const pixverseFields: INodeProperties[] = [
 		default: '',
 		description: 'The video_id or image_id to cancel',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['cancelJob'] } },
+	},
+	// getFeatures
+	{
+		displayName: 'Email',
+		name: 'pvFeaturesEmail',
+		type: 'string',
+		default: '',
+		description: 'Account email (required when multiple accounts configured)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['getFeatures'] } },
+	},
+	// listImages / listVideos
+	{
+		displayName: 'Email',
+		name: 'pvListEmail',
+		type: 'string',
+		default: '',
+		description: 'Account email (required when multiple accounts configured)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['listImages', 'listVideos'] } },
+	},
+	{
+		displayName: 'Limit',
+		name: 'pvListLimit',
+		type: 'number',
+		default: 50,
+		description: 'Number of items to return (default 50)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['listImages', 'listVideos'] } },
+	},
+	{
+		displayName: 'Offset',
+		name: 'pvListOffset',
+		type: 'number',
+		default: 0,
+		description: 'Offset for pagination',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['listImages', 'listVideos'] } },
 	},
 ];
 

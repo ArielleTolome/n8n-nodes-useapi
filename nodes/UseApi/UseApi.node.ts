@@ -1586,7 +1586,27 @@ async function executePixverse(
 		addOptionalField(this, body, 'pvc_captchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'pvc_captchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'pvc_captchaOrder', i, 'captchaOrder');
-		return await postAndMaybePoll(this, i, `${basePath}/images/create`, body, `${basePath}/videos`);
+		// PixVerse image jobs use images endpoint (not videos) and image_id field
+		const asyncMode = this.getNodeParameter('asyncMode', i, false) as boolean;
+		if (asyncMode) body.async = true;
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/images/create`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		// images/create returns success_ids array
+		const successIds = response.success_ids as string[] | undefined;
+		const imageId = successIds?.[0] || (response.image_id as string | undefined);
+		if (wait && imageId) {
+			// Poll until image_status_final = true
+			const startTime = Date.now();
+			const maxWaitMs = 300000;
+			while (Date.now() - startTime < maxWaitMs) {
+				const poll = await useApiRequest.call(this, 'GET', `${basePath}/images/${imageId}`);
+				if (poll.image_status_final === true) return poll;
+				if (poll.image_status === 7) throw new NodeOperationError(this.getNode(), 'PixVerse image moderated');
+				await new Promise((resolve) => setTimeout(resolve, 3000));
+			}
+			throw new NodeOperationError(this.getNode(), 'PixVerse image polling timed out');
+		}
+		return response;
 	}
 
 	if (operation === 'extendVideo') {
@@ -1762,6 +1782,35 @@ async function executePixverse(
 	if (operation === 'cancelJob') {
 		const id = this.getNodeParameter('pvCancelJobId', i) as string;
 		return await useApiRequest.call(this, 'DELETE', `${basePath}/scheduler/${id}`);
+	}
+
+	if (operation === 'getFeatures') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvFeaturesEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/features`, {}, qs);
+	}
+
+	if (operation === 'listImages') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvListEmail', i, '') as string;
+		if (email) qs.email = email;
+		const limit = this.getNodeParameter('pvListLimit', i, 50) as number;
+		if (limit) qs.limit = limit;
+		const offset = this.getNodeParameter('pvListOffset', i, 0) as number;
+		if (offset) qs.offset = offset;
+		return await useApiRequest.call(this, 'GET', `${basePath}/images`, {}, qs);
+	}
+
+	if (operation === 'listVideos') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvListEmail', i, '') as string;
+		if (email) qs.email = email;
+		const limit = this.getNodeParameter('pvListLimit', i, 50) as number;
+		if (limit) qs.limit = limit;
+		const offset = this.getNodeParameter('pvListOffset', i, 0) as number;
+		if (offset) qs.offset = offset;
+		return await useApiRequest.call(this, 'GET', `${basePath}/videos`, {}, qs);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown PixVerse operation: ${operation}`, {
