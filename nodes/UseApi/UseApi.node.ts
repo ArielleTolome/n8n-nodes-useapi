@@ -295,20 +295,19 @@ async function executeMidjourney(
 	}
 
 	if (operation === 'blend') {
+		// v3 API uses urls[] array
 		const imageUrl1 = this.getNodeParameter('blendImageUrl1', i) as string;
 		const imageUrl2 = this.getNodeParameter('blendImageUrl2', i) as string;
-		const body: Record<string, any> = {
-			imageUrl_1: imageUrl1,
-			imageUrl_2: imageUrl2,
-		};
+		const urls: string[] = [imageUrl1, imageUrl2];
 		const imageUrl3 = this.getNodeParameter('blendImageUrl3', i, '') as string;
-		if (imageUrl3) body.imageUrl_3 = imageUrl3;
+		if (imageUrl3) urls.push(imageUrl3);
 		const imageUrl4 = this.getNodeParameter('blendImageUrl4', i, '') as string;
-		if (imageUrl4) body.imageUrl_4 = imageUrl4;
+		if (imageUrl4) urls.push(imageUrl4);
 		const imageUrl5 = this.getNodeParameter('blendImageUrl5', i, '') as string;
-		if (imageUrl5) body.imageUrl_5 = imageUrl5;
+		if (imageUrl5) urls.push(imageUrl5);
+		const body: Record<string, any> = { urls };
 		const dimensions = this.getNodeParameter('dimensions', i, 'Square') as string;
-		if (dimensions) body.dimensions = dimensions;
+		if (dimensions && dimensions !== 'Square') body.dimensions = dimensions;
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'replyUrl', i);
 		addOptionalField(this, body, 'captchaToken', i);
@@ -381,6 +380,36 @@ async function executeMidjourney(
 
 	if (operation === 'listAccounts') {
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {
+			discord: this.getNodeParameter('discordToken', i) as string,
+		};
+		const maxJobs = this.getNodeParameter('mjMaxJobs', i, 3) as number;
+		if (maxJobs) body.maxJobs = maxJobs;
+		const maxImageJobs = this.getNodeParameter('mjMaxImageJobs', i, 3) as number;
+		if (maxImageJobs) body.maxImageJobs = maxImageJobs;
+		const maxVideoJobs = this.getNodeParameter('mjMaxVideoJobs', i, 3) as number;
+		if (maxVideoJobs) body.maxVideoJobs = maxVideoJobs;
+		addOptionalField(this, body, 'replyUrl', i);
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const channel = this.getNodeParameter('channelId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${channel}`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const channel = this.getNodeParameter('channelId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${channel}`);
+	}
+
+	if (operation === 'resetAccount') {
+		const body: Record<string, any> = {};
+		addOptionalField(this, body, 'channelId', i, 'channel');
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts/reset`, body);
 	}
 
 	// Midjourney v3 new operations

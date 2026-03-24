@@ -51,6 +51,10 @@ export const midjourneyOperations: INodeProperties = {
 		{ name: 'Fast Mode', value: 'fast', description: 'Switch account to fast mode', action: 'Switch to fast mode' },
 		{ name: 'Relax Mode', value: 'relax', description: 'Switch account to relax mode', action: 'Switch to relax mode' },
 		{ name: 'Turbo Mode', value: 'turbo', description: 'Switch account to turbo mode', action: 'Switch to turbo mode' },
+		{ name: 'Add Account', value: 'addAccount', description: 'Add a Midjourney Discord account', action: 'Add account' },
+		{ name: 'Get Account', value: 'getAccount', description: 'Get configuration for a specific channel', action: 'Get account' },
+		{ name: 'Delete Account', value: 'deleteAccount', description: 'Delete a configured channel', action: 'Delete account' },
+		{ name: 'Reset Account', value: 'resetAccount', description: 'Reset account error state (clear CAPTCHA/ban)', action: 'Reset account' },
 	],
 	default: 'imagine',
 };
@@ -570,6 +574,61 @@ export const midjourneyFields: INodeProperties[] = [
 		default: '',
 		description: 'Specific Midjourney account to use',
 		displayOptions: { show: { resource: ['midjourney'], operation: ['info', 'fast', 'relax', 'turbo'] } },
+	},
+
+	// addAccount (v3 - POST /accounts)
+	{
+		displayName: 'Discord Token',
+		name: 'discordToken',
+		type: 'string',
+		typeOptions: { password: true },
+		required: true,
+		default: '',
+		description: 'Discord account token for the Midjourney account',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Jobs',
+		name: 'mjMaxJobs',
+		type: 'number',
+		default: 3,
+		description: 'Maximum concurrent jobs (default 3)',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Image Jobs',
+		name: 'mjMaxImageJobs',
+		type: 'number',
+		default: 3,
+		description: 'Maximum concurrent image jobs',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Max Video Jobs',
+		name: 'mjMaxVideoJobs',
+		type: 'number',
+		default: 3,
+		description: 'Maximum concurrent video jobs',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Reply URL',
+		name: 'replyUrl',
+		type: 'string',
+		default: '',
+		description: 'Webhook URL for job completion callbacks',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['addAccount'] } },
+	},
+
+	// getAccount / deleteAccount (v3 - by channelId)
+	{
+		displayName: 'Channel ID',
+		name: 'channelId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Discord channel ID for the Midjourney account',
+		displayOptions: { show: { resource: ['midjourney'], operation: ['getAccount', 'deleteAccount', 'resetAccount'] } },
 	},
 ];
 
