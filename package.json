@@ -1,7 +1,7 @@
 {
-  "name": "n8n-nodes-useapi",
+  "name": "n8n-nodes-useapi-net",
   "version": "0.6.8",
-  "description": "n8n community nodes for useapi.net - AI services API (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow)",
+  "description": "n8n community nodes for useapi.net - AI generation services (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, GoogleFlow, InsightFaceSwap, Mureka, TemPolor)",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -20,7 +20,7 @@
     "video-generation"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/ArielleTolome/n8n-nodes-useapi",
+  "homepage": "https://github.com/ArielleTolome/n8n-nodes-useapi#readme",
   "author": {
     "name": "Ariel"
   },
