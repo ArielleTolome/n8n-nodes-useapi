@@ -1,28 +1,57 @@
 {
   "name": "n8n-nodes-useapi-net",
-  "version": "0.6.9",
+  "version": "0.7.0",
   "description": "n8n community nodes for useapi.net - AI generation services (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, GoogleFlow, InsightFaceSwap, Mureka, TemPolor)",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
+    "n8n-nodes",
     "useapi",
+    "useapi-net",
+    "ai",
+    "ai-automation",
+    "workflow-automation",
+    "image-generation",
+    "video-generation",
+    "text-to-image",
+    "text-to-video",
+    "image-to-video",
+    "ai-image",
+    "ai-video",
     "midjourney",
+    "midjourney-api",
+    "midjourney-n8n",
     "dreamina",
     "kling",
+    "kling-video",
     "runway",
+    "runway-ml",
+    "runwayml",
     "pixverse",
     "minimax",
+    "minimax-video",
     "google-flow",
     "veo",
-    "imagen",
-    "ai",
-    "image-generation",
-    "video-generation"
+    "veo3",
+    "google-veo",
+    "insightface",
+    "faceswap",
+    "face-swap",
+    "mureka",
+    "music-generation",
+    "ai-music",
+    "tempolor",
+    "stem-splitter",
+    "generative-ai",
+    "stable-diffusion",
+    "flux",
+    "sora"
   ],
   "license": "MIT",
   "homepage": "https://github.com/ArielleTolome/n8n-nodes-useapi#readme",
   "author": {
-    "name": "Ariel"
+    "name": "ArielleTolome",
+    "url": "https://github.com/ArielleTolome"
   },
   "repository": {
     "type": "git",
@@ -94,5 +123,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/ArielleTolome/n8n-nodes-useapi/issues"
   }
 }
