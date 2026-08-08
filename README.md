@@ -1,23 +1,29 @@
 # n8n-nodes-useapi
 
-n8n community nodes for [useapi.net](https://useapi.net) — a unified REST API for AI video, image, music, and creative services including Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Flow Music, Mureka, and TemPolor.
+n8n community nodes for [useapi.net](https://useapi.net) — unified REST API for AI video, image, music, and creative services.
 
-> **Note:** The npm package name `n8n-nodes-useapi` is taken by an unrelated package. Install from GitHub (see below).
+**Package:** `n8n-nodes-useapi-net` · **Current:** v1.0.0 (Aug 2026 UseAPI.net)
 
-## API Version Support (v0.6.7+)
+## API Version Support (v1.0.0)
 
-| Resource | API Version | Notes |
-|----------|-------------|-------|
-| **Midjourney** | **v3** | `/v3/midjourney/...` — Latest v3 API with video support, CAPTCHA solver, info/fast/relax/turbo ops |
-| **PixVerse** | **v2** | `/v2/pixverse/...` — Models v5.6, v5.5, v5, v5-fast; images with 7 models |
-| Kling | v1 | `/v1/kling/...` — Models v3, O1, 2.6, 2.5+ with native audio, avatars, elements |
-| Runway | v1 | `/v1/runwayml/...` — Gen-4.5, Gen-4, unified videos/create and images/create |
-| MiniMax | v1 | `/v1/minimax/...` — Hailuo 01/02/2.3, Sora 2, Veo 3.1, unified endpoints |
-| Dreamina | v1 | `/v1/dreamina/...` — Seedance 2.0, Seedream 5.0 Lite |
-| Google Flow | v1 | `/v1/google-flow/...` — Veo 3.1, Imagen 4, Nano Banana series |
-| InsightFaceSwap | v1 | `/v1/faceswap/...` |
-| Mureka | v1 | `/v1/mureka/...` — SkyMusic 2.0, TTS |
-| TemPolor | v1 | `/v1/tempolor/...` — Royalty-free music |
+| Resource | API | Highlights (Aug 2026) |
+|----------|-----|------------------------|
+| **Google Flow** *(default)* | v1 `/v1/google-flow` | Images: `nano-banana-2-lite` (default), `nano-banana-2`, `nano-banana-pro`. Video: `veo-3.1-fast/quality/lite`, `omni-flash`. Fields: `aspectRatio`, `count`, `reference_1..10` |
+| **Flow Music** | v1 `/v1/flowmusic` | Lyria 3 Pro — create/edit/lyrics/list/download, files, jobs, accounts |
+| **Dreamina** | v1 `/v1/dreamina` | Video: `seedance-2.5` (default, up to 30s), `seedance-2.0`/`fast`/`mini`. Image: `seedream-4.7`, `seedream-5.0-lite` |
+| **MiniMax** | v1 `/v1/minimax` | Video: `Hailuo-3.0`, `Seedance-2.0`/`Fast`/`Mini`, `02`, `T2V-2.3`, `Veo-3.1`, `Sora-2` + omni file refs |
+| **PixVerse** | v2 `/v2/pixverse` | Video v6 + Seedance/Kling/Veo/Sora; images seedream-5.0-pro/lite; **music** + **speech** TTS |
+| **Runway** | v1 `/v1/runwayml` | Gen-4.5 + images `nano-banana-2-lite` default |
+| Kling | v1 `/v1/kling` | V3 / O1 / 2.x |
+| Mureka | v1 `/v1/mureka` | Music + TTS |
+| TemPolor | v1 `/v1/tempolor` | Royalty-free music / stems |
+| InsightFaceSwap | v1 `/v1/faceswap` | Face swap |
+| Midjourney | v3 `/v3/midjourney` | **Discontinued June 24 2026** — kept for legacy jobs |
+
+### Model ID notes
+- MiniMax uses exact IDs: `Hailuo-3.0`, `Seedance-2.0`, `02`, `T2V-2.3`, `Veo-3.1`, `Sora-2` (not `hailuo-02`).
+- Google Flow image requests send `aspectRatio` + `count` (not `aspect_ratio` / `image_count`).
+- Google Flow video maps 16:9→`landscape`, 9:16→`portrait`.
 
 ---
 
@@ -49,11 +55,21 @@ cd ~/.n8n/nodes
 npm install github:ArielleTolome/n8n-nodes-useapi
 ```
 
+Or pin a release:
+
+```bash
+npm install github:ArielleTolome/n8n-nodes-useapi#v1.0.0
+```
+
 Restart n8n after installation. The nodes will appear in the node picker — search for **UseAPI**.
 
-### Manual (npm not available due to name conflict)
+### npm
 
-The name `n8n-nodes-useapi` on npm points to a different, unrelated package. Use the GitHub install method above.
+```bash
+npm i n8n-nodes-useapi-net
+```
+
+> Note: the older npm name `n8n-nodes-useapi` is a different package. Prefer `n8n-nodes-useapi-net` or the GitHub install.
 
 ---
 
@@ -69,254 +85,62 @@ The name `n8n-nodes-useapi` on npm points to a different, unrelated package. Use
 1. In n8n, go to **Credentials > New Credential**
 2. Search for **UseAPI Credentials**
 3. Paste your API token
-4. Click **Save** — credentials are tested automatically against the Midjourney accounts endpoint
+4. Click **Save**
 
 ---
 
 ## Resources & Operations
 
-### 🎨 Midjourney
+### Google Flow (default)
 
-Operations: Imagine, Button, Describe, Blend, Seed, Settings, Remix, Variability, Get Job, List Jobs, Cancel Job, List Accounts
+Operations: Generate Image, Upscale Image, Generate Video, Extend/Upscale/GIF/Concatenate, Jobs, Assets, Accounts, Captcha providers
 
-Key parameters:
-- `prompt` — image prompt text
-- `sref` — style reference URL for style consistency
-- `cref` — character reference URL for character consistency
-- `account` — specific account to use
-- `replyUrl` / `replyRef` — webhook callback and custom reference
-- `captchaToken` / `captchaRetry` / `captchaOrder` — CAPTCHA handling
-- `waitForCompletion` — poll until complete (default: true)
+Key image params: `model` (`nano-banana-2-lite` default), `aspectRatio`, `count`, `gfImgRefs` → `reference_1..10`
 
----
+Key video params: `model` (`veo-3.1-fast` / lite / omni-flash), landscape/portrait, multi-modal refs
 
-### 🎨 Dreamina
+### Flow Music (Lyria 3 Pro)
 
-Operations: Generate Image, Generate Video, Upscale Image (2K/4K/8K), Get Image Job, Get Video Job, List Assets, Delete Asset, Cancel Job, Add Account, Get Account, List Accounts, Delete Account
+Operations: Create Music, Edit Music, Generate Lyrics, List/Download Music, Upload File, Jobs, Accounts, Usage
 
-Key parameters (Generate Image/Video):
-- `prompt`, `imageUrl`
-- `model`, `aspectRatio`, `duration`
-- `seed`, `negativePrompt`
-- `replyUrl` / `replyRef`
-- `async` — fire-and-forget mode
-- `waitForCompletion`
+Connect accounts with a Flow Music `refresh_token` (see [Setup Flow Music](https://useapi.net/docs/start-here/setup-flowmusic)).
 
----
+### Dreamina
 
-### 🎬 Kling
+Operations: Generate Image, Generate Video, Upscale Image, Jobs, Assets, Accounts
 
-Operations: Text to Video, Image to Video, Image to Video Effects, Extend Video, Lip Sync, Add Sound, Motion Create, Text to Image (KOLORS), Omni Image, Virtual Try On, Recognize Faces, Upscale Image, Text to Speech, Avatar Video, Get Task, List Tasks, Cancel Task, List Effects, List Motions, List Avatars, List TTS Voices, Upload Asset, List Assets, List Accounts
+Video: `seedance-2.5` default, resolution 480p/720p/1080p/4k, omni image/video/audio CSV refs
 
-Key parameters (Video generation):
-- `prompt`, `imageUrl`, `endImageUrl`
-- `model` — Kling V3 (default), O1, V2.6, V2.5, V2.1, V2.0, V1.6, V1.5
-- `duration` — 5, 10, or 15 seconds (15s available for Kling V3)
-- `enableAudio` — add native audio/sound effects to video
-- `aspectRatio`
-- `seed`
-- `negativePrompt`
-- `replyUrl` / `replyRef`
-- `async` — fire-and-forget mode
-- `captchaToken`
-- `waitForCompletion`
+### MiniMax / Hailuo
 
----
+Operations: Create Video/Image/Music, Agent, Files, Jobs, Accounts
 
-### 🎬 Runway
+Create Video supports `fileID`, `end_frame_fileID`, `fileID2-9`, `videoFileID1-3`, `audioFileID1-3`, `options`, `aspectRatio`, and independent `resolution`/`duration` for Seedance/H3.
 
-Operations: Create Video, Create Image, Lip Sync, Act Two, Frames, Get Job, List Accounts, Gen 4.5, Gen 4 Turbo, Gen 4, Gen 4 Upscale, Gen 4 Video, Act Two Voice, Gen 3 Turbo, Gen 3, Super Slow Motion, Transcribe, List Assets
+### PixVerse
 
-Key parameters (Create Video):
-- `prompt`, `imageUrl`, `endImageUrl`
-- `model` — Gen 3/4/4.5 variant
-- `duration`, `aspectRatio`
-- `seed`
-- `replyUrl` / `replyRef`
-- `async`
-- `waitForCompletion`
+Operations: Video (create/frames/extend/modify/fusion/lipsync/upscale), Images, **Create Music**, **Create Speech** + voices/models, Accounts, Features
 
----
+Music models: `music-2.6`, `music-v1`, `lyria-3-pro-preview`  
+Speech models: `speech-2.8-hd`, `speech-2.8-turbo`, ElevenLabs v2/v3/turbo
 
-### 🎬 PixVerse
+### Midjourney (discontinued)
 
-Operations: Create Video, Create Image, Create Frames (multi-keyframe), Extend Video, Modify Video, Lip Sync Video, Upscale Video, Get Job, Create Fusion, Create Transition, List LipSync Voices, List Effects, Get/Delete Video, Get/Delete Image, Add/Get/Delete Account, Cancel Job, List Accounts
+Legacy v3 ops retained for existing workflows. Prefer Google Flow / Dreamina / MiniMax for new image work.
 
-Key parameters (Create Video):
-- `prompt`, `imageUrl`
-- `model`, `style`, `duration`, `aspectRatio`
-- `negativePrompt` — for Modify Video and standard generation
-- `seed`
-- `replyUrl` / `replyRef`
-- `async`, `captchaToken`
-- `waitForCompletion`
+### Kling / Runway / Mureka / TemPolor / InsightFaceSwap
 
----
-
-### 🎬 MiniMax
-
-Operations: Create Video, Create Image, Create Music, Agent, Get Video Job, Get Image Job, List Accounts, Add/Delete Account, Cancel Video, List Agent Templates, List Characters, Upload File
-
-Key parameters (Create Video):
-- `prompt`, `imageUrl`
-- `model`, `duration`, `aspectRatio`
-- `seed`
-- `replyUrl` / `replyRef`
-- `async`, `waitForCompletion`
-
----
-
-### 👤 InsightFaceSwap
-
-Operations: Swap Face, Get Job, List Accounts
-
-Key parameters:
-- `sourceImageUrl` — image with the source face
-- `targetImageUrl` — image where the face will be swapped
-- `account`
-- `replyUrl` / `replyRef`
-- `waitForCompletion`
-
----
-
-### 🎥 Google Flow
-
-Operations: Generate Image, Upscale Image, Generate Video (Veo 3.1 Fast/Quality/Relaxed), Upscale Video, Extend Video, Create GIF, Concatenate Videos, Get Job, List Jobs, Cancel Job, List Assets, Add Account, Get Account, List Accounts, Delete Account, Configure Captcha
-
-**Video generation supports Veo 3.1 with three tiers:**
-- `Veo 3.1 Fast` — fastest generation, good quality (default)
-- `Veo 3.1 Quality` — highest quality, slower
-- `Veo 3.1 Fast Relaxed` — balanced speed and quality
-
-**Subject Reference (S2V) mode:** provide one or more `referenceUrls` to anchor the subject across frames.
-
-Key parameters (Generate Video):
-- `prompt`, `imageUrl`
-- `model` — Veo 3.1 tier selection
-- `duration`, `aspectRatio`, `resolution`
-- `referenceUrls` — subject reference images for S2V
-- `endImageUrl` — end frame for image-to-video
-- `seed`
-- `replyUrl` / `replyRef`
-- `async`, `captchaToken`
-- `waitForCompletion`
-
-Note: Create GIF and Concatenate Videos are synchronous — no polling required.
-
----
-
-### 🎵 Mureka
-
-Operations: Create Song, Create Advanced Song, Create Instrumental, Generate Lyrics, Text to Speech, List Voices, List Moods & Genres, Get Song, List Songs, Delete Song, Download Song, Extend Song, Generate Music Video, Add/Get/Delete Account
-
-Models: `V8`, `O2`, `V7.6`, `V7.5`
-
-Key parameters (Create Song):
-- `prompt` — lyric/style prompt
-- `model` — Mureka model version
-- `mood`, `genre`, `bpm`
-- `replyUrl` / `replyRef`
-- `async`, `waitForCompletion`
-
-Key parameters (Create Advanced Song):
-- `lyrics` — structured lyrics with `[Verse]`, `[Chorus]` sections
-- `style`, `model`
-
----
-
-### 🎵 TemPolor
-
-Operations: Create Song, Create Instrumental, Split Stems, Get Song, Download Song, List Artist Voices, Add/Get/Delete Account, Delete Song, Upload/List/Delete MIDI, Clone Voice, List/Delete Cloned Voices
-
-Key parameters (Create Song):
-- `prompt` — creative prompt
-- `lyrics` — optional custom lyrics
-- `style`, `bpm`, `duration`
-- `artistVoice` — voice model for singing
-- `replyUrl` / `replyRef`
-- `async`, `waitForCompletion`
-
-Key parameters (Split Stems):
-- `audioUrl` — source audio file URL
-- `stems` — comma-separated list (vocals, drums, bass, etc.)
-
----
-
-## Async Job Handling
-
-Most AI operations are asynchronous. Each creation operation has a **Wait for Completion** toggle (enabled by default) that automatically polls the job status until it completes or fails.
-
-- **Polling interval:** 3 seconds
-- **Timeout:** 5 minutes (300 seconds)
-- **On failure:** Throws an error with the failure message
-
-Disable **Wait for Completion** to get the initial job response immediately, then use the corresponding **Get Job/Task** operation to check status manually.
-
-For immediate fire-and-forget without polling, use the **Async** toggle (where supported) — returns the task ID only.
-
-> **Note:** Create GIF and Concatenate Videos (Google Flow) are synchronous and do not require polling.
-
----
-
-## Example: Midjourney Imagine
-
-1. Add the **UseAPI** node to your workflow
-2. Select **Midjourney** as the resource
-3. Select **Imagine** as the operation
-4. Enter your prompt (optionally add `sref`/`cref` for style/character references)
-5. Execute — the node waits for the image to be generated and returns the full result with image URLs
-
----
-
-## Rate Limits
-
-The useapi.net API enforces rate limits per account/plan. When the limit is exceeded, the API returns HTTP **429** or **402 (quota exceeded)**.
-
-Recommendations for high-volume workflows:
-- Disable **Wait for Completion** and poll manually to avoid holding long-running requests.
-- Add a **Wait** node between batches to control request cadence.
-- Check your plan limits at [useapi.net](https://useapi.net).
-
----
-
-## Links
-
-- [useapi.net Documentation](https://useapi.net/docs)
-- [GitHub Repository](https://github.com/ArielleTolome/n8n-nodes-useapi)
+See node operation lists in the n8n UI. Runway images default to `nano-banana-2-lite`.
 
 ---
 
 ## Changelog
 
-| Version | Changes |
-|---------|---------|
-| v0.5.5 | Security audit — sanitize error objects to prevent API token leaks in error messages; add Rate Limits section to README |
-| v0.5.4 | Midjourney blend: replace `blendUrls` comma-string with individual `imageUrl_1`…`imageUrl_5` fields matching API format; README changelog update |
-| v0.5.3 | MiniMax uploadFile + TemPolor operations: binary upload support; Midjourney describe: fix field name |
-| v0.5.2 | MiniMax agent operation fix; asyncMode field confirmed correct across all async resources |
-| v0.5.1 | Snake_case audit — 22 API parameter naming fixes across resources (camelCase → correct snake_case field names) |
-| v0.5.0 | ESLint v10 migration fix — resolve peer dependency conflicts and update lint configuration |
-| v0.4.7 | Kling: add 15s duration + `enable_audio` field (T2V/I2V), default model → kling-v3; MiniMax: add T2V-2.3, I2V-2.3, I2V-2.3-Fast, Veo-3.1, Veo-3.1-Fast models |
-| v0.4.6 | ESLint fix + UX polish (placeholder text, description improvements across resources) |
-| v0.4.5 | Update README with complete field documentation and changelog |
-| v0.4.4 | Final gap-fill — Midjourney sref/cref fields, PixVerse modifyVideo negativePrompt, execute logic verification across all resources |
-| v0.4.3 | Add async field to all generation operations + fill remaining model-specific parameter gaps |
-| v0.4.2 | Deep-pass — fill execute logic gaps, add async field, verify all optional fields are actually sent in all operations |
-| v0.4.1 | Add missing optional fields to all remaining operations across all resources |
-| v0.4.0 | Add all missing optional fields to all nodes and operations (seed, negativePrompt, replyUrl, replyRef, captchaToken, endImageUrl) |
-| v0.3.9 | TemPolor: Account management, Delete Song, MIDI upload/list/delete, Voice cloning (clone, list, delete); README updated |
-| v0.3.8 | MiniMax: Add/Delete Account, Cancel Video, List Agent Templates, List Characters, Upload File; Mureka: Account management, Song management, Generate Music Video |
-| v0.3.7 | PixVerse: Create Fusion, Create Transition, List LipSync Voices, List Effects, Get/Delete Video, Get/Delete Image, Account management, Cancel Job |
-| v0.3.6 | Kling: Omni Video (O1), Image-to-Video First+Last Frames, Image-to-Video Elements, KOLORS Elements, List Elements/Tags/Voices, Account management |
-| v0.3.5 | README: add Mureka, TemPolor, Google Flow video docs |
-| v0.3.4 | New resource: TemPolor (Create Song, Instrumental, Split Stems, Get/Download Song, List Artist Voices) |
-| v0.3.3 | MiniMax: Agent operation; New resource: Mureka (Create Song, Advanced Song, Instrumental, Generate Lyrics, TTS, List Voices/Moods) |
-| v0.3.2 | Dreamina: Upscale Image 2K/4K/8K; PixVerse: Create Frames, Extend Video, Modify Video, Lip Sync Video, Upscale Video |
-| v0.3.1 | Google Flow: Generate Video (Veo 3.1), Upscale Video, Extend Video, Create GIF, Concatenate Videos |
-| v0.3.0 | Add Runway full coverage (Gen 3/4/4.5/Turbo, Act One/Two, Expand, Slow Motion, Transcribe, Assets) |
-| v0.2.2 | Fix Runway model values and field names |
-| v0.2.0 | Add Google Flow resource (Veo 3, Imagen 4, Nano Banana, assets, jobs) |
-| v0.1.0 | Initial release — 7 resources (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap) |
+See [CHANGELOG.md](./CHANGELOG.md) for full history. Recent:
+
+- **v1.0.0** — Docs/README sync, E2E verification, stable Aug 2026 API surface
+- **v0.9.0** — Flow Music + PixVerse music/speech
+- **v0.8.0** — Model catalogs + MiniMax/Google Flow/Dreamina field mapping
 
 ---
 

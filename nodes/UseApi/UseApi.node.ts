@@ -43,7 +43,7 @@ export class UseApi implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description:
-			'Interact with AI services via useapi.net (Google Flow, Flow Music, Dreamina, MiniMax, PixVerse, Runway, Kling, Mureka, TemPolor, InsightFaceSwap, Midjourney discontinued)',
+			'Interact with AI services via useapi.net (Google Flow, Flow Music, MiniMax, Dreamina, PixVerse (Google Flow, Flow Music, Dreamina, MiniMax, PixVerse, Runway, Kling, Mureka, TemPolor, InsightFaceSwap, Midjourney discontinued)',
 		defaults: { name: 'UseAPI' },
 		inputs: ['main'],
 		outputs: ['main'],
@@ -1002,6 +1002,17 @@ async function executeKling(
 			email: this.getNodeParameter('klingAccountEmail', i) as string,
 			password: this.getNodeParameter('klingAccountPassword', i) as string,
 		};
+		const passToken = this.getNodeParameter('klingPassToken', i, '') as string;
+		const did = this.getNodeParameter('klingDid', i, '') as string;
+		const userId = this.getNodeParameter('klingUserId', i, '') as string;
+		if (passToken || did || userId) {
+			if (!(passToken && did && userId)) {
+				throw new NodeOperationError(this.getNode(), 'passToken, did, and userId must be provided together (or none)', { itemIndex: i });
+			}
+			body.passToken = passToken;
+			body.did = did;
+			body.userId = userId;
+		}
 		const maxJobs = this.getNodeParameter('klingAccountMaxJobs', i, 10) as number;
 		if (maxJobs) body.maxJobs = maxJobs;
 		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
@@ -1064,8 +1075,9 @@ async function executeRunway(
 	if (operation === 'createImage') {
 		const body: Record<string, any> = {
 			model: this.getNodeParameter('model', i) as string,
-			aspect_ratio: this.getNodeParameter('ratio', i) as string,
 		};
+		const ratio = this.getNodeParameter('ratio', i, '') as string;
+		if (ratio && ratio !== 'auto') body.aspect_ratio = ratio;
 		// text_prompt is required for gpt-image-1-5 and gpt-image-1-mini, optional for others
 		const textPrompt = this.getNodeParameter('prompt', i) as string;
 		if (textPrompt) body.text_prompt = textPrompt;
@@ -1569,6 +1581,30 @@ async function executeRunway(
 		return await useApiRequest.call(this, 'GET', `${basePath}/features`, {}, qs);
 	}
 
+	if (operation === 'videoUpscale') {
+		const body: Record<string, any> = {
+			video_assetId: this.getNodeParameter('rwUpscaleVideoAssetId', i) as string,
+		};
+		if (this.getNodeParameter('rwUpscaleExploreMode', i, false) as boolean) body.exploreMode = true;
+		const email = this.getNodeParameter('rwUpscaleEmail', i, '') as string;
+		if (email) body.email = email;
+		return await postAndMaybePoll(this, i, `${basePath}/videos/upscale`, body, `${basePath}/videos`);
+	}
+
+	if (operation === 'addAccount') {
+		const email = this.getNodeParameter('rwAccountEmail', i) as string;
+		const body: Record<string, any> = {};
+		const payload = this.getNodeParameter('rwAccountPayload', i, '') as string;
+		if (payload) {
+			try { Object.assign(body, JSON.parse(payload)); }
+			catch { body.cookies = payload; }
+		}
+		const useWorkspace = this.getNodeParameter('rwUseWorkspace', i, '') as string;
+		if (useWorkspace === 'true' || useWorkspace === '1') body.useWorkspace = true;
+		else if (useWorkspace) body.useWorkspace = useWorkspace;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts/${email}`, body);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown Runway operation: ${operation}`, {
 		itemIndex: i,
 	});
@@ -1950,6 +1986,30 @@ async function executePixverse(
 		const email = this.getNodeParameter('pvSpeechEmail', i, '') as string;
 		if (email) qs.email = email;
 		return await useApiRequest.call(this, 'GET', `${basePath}/speech`, {}, qs);
+	}
+
+	if (operation === 'motionControl') {
+		const body: Record<string, any> = {
+			image_path: this.getNodeParameter('pvMotionImage', i) as string,
+			video_path: this.getNodeParameter('pvMotionVideo', i) as string,
+		};
+		const prompt = this.getNodeParameter('pvMotionPrompt', i, '') as string;
+		if (prompt) body.prompt = prompt;
+		const email = this.getNodeParameter('pvMotionEmail', i, '') as string;
+		if (email) body.email = email;
+		return await pixverseVideoPoll(this, i, `${basePath}/videos/motion-control`, body, basePath);
+	}
+
+	if (operation === 'getMusic') {
+		const id = this.getNodeParameter('pvMusicAudioId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/${id}`);
+	}
+
+	if (operation === 'listMusicTracks') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvMotionEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music`, {}, qs);
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown PixVerse operation: ${operation}`, {
@@ -2413,6 +2473,60 @@ async function executeGoogleFlow(
 		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/captcha-stats`);
 	}
 
+	if (operation === 'getAsset') {
+		const id = this.getNodeParameter('gfMediaGenerationId', i) as string;
+		const qs: Record<string, any> = {};
+		if (this.getNodeParameter('gfAssetRaw', i, false) as boolean) qs.raw = true;
+		return await useApiRequest.call(this, 'GET', `${basePath}/assets/${id}`, {}, qs);
+	}
+
+	if (operation === 'uploadAsset') {
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const email = this.getNodeParameter('gfUploadEmail', i, '') as string;
+		const endpoint = email ? `${basePath}/assets/${email}` : `${basePath}/assets`;
+		return await useApiBinaryUpload.call(this, endpoint, binaryPropertyName, i, {});
+	}
+
+	if (operation === 'createCharacter') {
+		const body: Record<string, any> = {};
+		const name = this.getNodeParameter('gfCharacterName', i, '') as string;
+		if (name) body.name = name;
+		const imgs = (this.getNodeParameter('gfCharacterImages', i, '') as string).split(',').map(s=>s.trim()).filter(Boolean);
+		imgs.forEach((id, idx) => { body[`image_${idx+1}`] = id; });
+		// also accept mediaGenerationId single
+		const mid = this.getNodeParameter('gfMediaGenerationId', i, '') as string;
+		if (mid && !imgs.length) body.image_1 = mid;
+		const voice = this.getNodeParameter('gfCharacterVoice', i, '') as string;
+		if (voice) body.voice = voice;
+		const email = this.getNodeParameter('gfUploadEmail', i, '') as string;
+		if (email) body.email = email;
+		return await useApiRequest.call(this, 'POST', `${basePath}/characters`, body);
+	}
+
+	if (operation === 'listCharacters') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('gfUploadEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/characters`, {}, qs);
+	}
+
+	if (operation === 'createVoice') {
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const qs: IDataObject = {};
+		const email = this.getNodeParameter('gfUploadEmail', i, '') as string;
+		if (email) qs.email = email;
+		const name = this.getNodeParameter('gfVoiceName', i, '') as string;
+		if (name) qs.name = name;
+		return await useApiBinaryUpload.call(this, `${basePath}/voices`, binaryPropertyName, i, qs);
+	}
+
+	if (operation === 'listVoices') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('gfUploadEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/voices`, {}, qs);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown Google Flow operation: ${operation}`, {
 		itemIndex: i,
 	});
@@ -2524,12 +2638,24 @@ async function executeMureka(
 	}
 
 	if (operation === 'addAccount') {
-		const body: Record<string, any> = {
-			token: this.getNodeParameter('murekaAccountToken', i) as string,
-		};
+		const body: Record<string, any> = {};
+		const email = this.getNodeParameter('murekaAccountEmail', i, '') as string;
+		const password = this.getNodeParameter('murekaAccountPassword', i, '') as string;
+		const token = this.getNodeParameter('murekaAccountToken', i, '') as string;
+		const refresh = this.getNodeParameter('murekaRefreshToken', i, '') as string;
+		if (email && password) {
+			body.email = email;
+			body.password = password;
+		} else if (token) {
+			body.token = token;
+			if (refresh) body.refresh_token = refresh;
+		} else {
+			throw new NodeOperationError(this.getNode(), 'Provide email+password (preferred) or token[+refresh_token]', { itemIndex: i });
+		}
 		const maxJobs = this.getNodeParameter('murekaAccountMaxJobs', i, 0) as number;
 		if (maxJobs) body.maxJobs = maxJobs;
 		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
 	}
 
 	if (operation === 'getAccount') {

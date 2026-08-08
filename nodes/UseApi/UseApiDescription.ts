@@ -1,4 +1,7 @@
-import type { INodeProperties } from 'n8n-workflow';
+
+		{ name: 'Motion Control', value: 'motionControl', description: 'Drive a character image with motion from a reference video', action: 'Motion control' },
+		{ name: 'Get Music', value: 'getMusic', description: 'Get a music track by audio_id', action: 'Get music' },
+		{ name: 'List Music', value: 'listMusicTracks', description: 'List generated music tracks', action: 'List music tracks' },import type { INodeProperties } from 'n8n-workflow';
 
 // ──────────────────────────────────────────────────────────────
 // Resource selector
@@ -1279,17 +1282,18 @@ export const klingFields: INodeProperties[] = [
 		name: 'model',
 		type: 'options',
 		options: [
-			{ name: 'Kling V3', value: 'kling-v3' },
+			{ name: 'Kling v3', value: 'kling-v3' },
+			{ name: 'Kling v3.0 Turbo', value: 'kling-v3-0-turbo' },
 			{ name: 'Kling O1', value: 'kling-o1' },
-			{ name: 'Kling V2.6', value: 'kling-v2.6' },
-			{ name: 'Kling V2.5', value: 'kling-v2.5' },
-			{ name: 'Kling V2.1', value: 'kling-v2.1' },
-			{ name: 'Kling V2.0', value: 'kling-v2.0' },
-			{ name: 'Kling V1.6', value: 'kling-v1.6' },
-			{ name: 'Kling V1.5', value: 'kling-v1.5' },
+			{ name: 'Kling v2.6', value: 'kling-v2.6' },
+			{ name: 'Kling v2.5', value: 'kling-v2.5' },
+			{ name: 'Kling v2.1', value: 'kling-v2.1' },
+			{ name: 'Kling v2.0', value: 'kling-v2.0' },
+			{ name: 'Kling v1.6', value: 'kling-v1.6' },
+			{ name: 'Kling v1.5', value: 'kling-v1.5' },
 		],
 		default: 'kling-v3',
-		description: 'Video generation model',
+		description: 'Kling text-to-video model (includes v3.0 Turbo).',
 		displayOptions: { show: { resource: ['kling'], operation: ['textToVideo'] } },
 	},
 	{
@@ -1462,17 +1466,18 @@ export const klingFields: INodeProperties[] = [
 		name: 'model',
 		type: 'options',
 		options: [
-			{ name: 'Kling V3', value: 'kling-v3' },
+			{ name: 'Kling v3', value: 'kling-v3' },
+			{ name: 'Kling v3.0 Turbo', value: 'kling-v3-0-turbo' },
 			{ name: 'Kling O1', value: 'kling-o1' },
-			{ name: 'Kling V2.6', value: 'kling-v2.6' },
-			{ name: 'Kling V2.5', value: 'kling-v2.5' },
-			{ name: 'Kling V2.1', value: 'kling-v2.1' },
-			{ name: 'Kling V2.0', value: 'kling-v2.0' },
-			{ name: 'Kling V1.6', value: 'kling-v1.6' },
-			{ name: 'Kling V1.5', value: 'kling-v1.5' },
+			{ name: 'Kling v2.6', value: 'kling-v2.6' },
+			{ name: 'Kling v2.5', value: 'kling-v2.5' },
+			{ name: 'Kling v2.1', value: 'kling-v2.1' },
+			{ name: 'Kling v2.0', value: 'kling-v2.0' },
+			{ name: 'Kling v1.6', value: 'kling-v1.6' },
+			{ name: 'Kling v1.5', value: 'kling-v1.5' },
 		],
 		default: 'kling-v3',
-		description: 'Video generation model',
+		description: 'Kling image-to-video model (includes v3.0 Turbo).',
 		displayOptions: { show: { resource: ['kling'], operation: ['imageToVideo'] } },
 	},
 	{
@@ -2582,6 +2587,31 @@ export const klingFields: INodeProperties[] = [
 		displayOptions: { show: { resource: ['kling'], operation: ['addAccount'] } },
 	},
 	{
+		displayName: 'Pass Token (Captcha Slider Accounts)',
+		name: 'klingPassToken',
+		type: 'string',
+		typeOptions: { password: true },
+		default: '',
+		description: 'Optional. With did + userId, connect accounts that hit the Kling login slider captcha (July 2026).',
+		displayOptions: { show: { resource: ['kling'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Device ID (did)',
+		name: 'klingDid',
+		type: 'string',
+		default: '',
+		description: 'Required together with passToken + userId for passToken auth mode',
+		displayOptions: { show: { resource: ['kling'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'User ID',
+		name: 'klingUserId',
+		type: 'string',
+		default: '',
+		description: 'Required together with passToken + did for passToken auth mode',
+		displayOptions: { show: { resource: ['kling'], operation: ['addAccount'] } },
+	},
+	{
 		displayName: 'Max Jobs',
 		name: 'klingAccountMaxJobs',
 		type: 'number',
@@ -2708,6 +2738,8 @@ export const runwayOperations: INodeProperties = {
 		{ name: 'Delete Scheduler Task', value: 'deleteSchedulerTask', description: 'Delete a scheduled task', action: 'Delete scheduler task' },
 		// Account
 		{ name: 'Get Features', value: 'getFeatures', description: 'Get account credits and features', action: 'Get features' },
+		{ name: 'Video Upscale (Topaz)', value: 'videoUpscale', description: 'Topaz AI 4K video upscale', action: 'Upscale video' },
+		{ name: 'Add Account', value: 'addAccount', description: 'Add/connect a Runway account (supports useWorkspace)', action: 'Add account' },
 	],
 	default: 'createVideo',
 };
@@ -2722,6 +2754,14 @@ export const runwayFields: INodeProperties[] = [
 			{ name: 'Gen-4.5', value: 'gen4.5' },
 			{ name: 'Gen-4', value: 'gen4' },
 			{ name: 'Gen-4 Turbo', value: 'gen4-turbo' },
+			{ name: 'Seedance 2', value: 'seedance-2' },
+			{ name: 'Seedance 2 Fast', value: 'seedance-2-fast' },
+			{ name: 'Grok Imagine 1.5 (I2V)', value: 'grok-imagine-1.5' },
+			{ name: 'HappyHorse 1.0', value: 'happyhorse-1.0' },
+			{ name: 'Kling Omni v3 Pro', value: 'kling-o3-pro' },
+			{ name: 'Kling Omni v3 Standard', value: 'kling-o3-standard' },
+			{ name: 'Kling Omni v3 4K', value: 'kling-o3-4k' },
+			{ name: 'Kling 3.0 Motion Control', value: 'kling-3.0-motion-control' },
 			{ name: 'Kling 3.0 Pro', value: 'kling-3.0-pro' },
 			{ name: 'Kling 3.0 Standard', value: 'kling-3.0-standard' },
 			{ name: 'Kling 2.6 Pro', value: 'kling-2.6-pro' },
@@ -2733,7 +2773,7 @@ export const runwayFields: INodeProperties[] = [
 			{ name: 'Wan 2.2 Animate', value: 'wan-2.2-animate' },
 		],
 		default: 'gen4.5',
-		description: 'Video generation model',
+		description: 'Runway video model (Aug 2026 catalog: Seedance 2, Grok 1.5, HappyHorse, Kling O3).',
 		displayOptions: { show: { resource: ['runway'], operation: ['createVideo'] } },
 	},
 	{
@@ -2855,6 +2895,7 @@ export const runwayFields: INodeProperties[] = [
 			{ name: 'Nano Banana 2', value: 'nano-banana-2' },
 			{ name: 'Nano Banana Pro', value: 'nano-banana-pro' },
 			{ name: 'Nano Banana', value: 'nano-banana' },
+			{ name: 'GPT Image 2', value: 'gpt-image-2' },
 			{ name: 'GPT Image 1.5', value: 'gpt-image-1-5' },
 			{ name: 'GPT Image 1 Mini', value: 'gpt-image-1-mini' },
 			{ name: 'Seedream 5', value: 'seedream-5' },
@@ -2862,7 +2903,7 @@ export const runwayFields: INodeProperties[] = [
 			{ name: 'Gen-4 Turbo', value: 'gen4-turbo' },
 		],
 		default: 'nano-banana-2-lite',
-		description: 'Image generation model',
+		description: 'Runway image model (includes GPT Image 2 + Nano Banana 2 Lite).',
 		displayOptions: { show: { resource: ['runway'], operation: ['createImage'] } },
 	},
 	{
@@ -3784,6 +3825,64 @@ export const runwayFields: INodeProperties[] = [
 		description: 'Optional account email (required if multiple accounts)',
 		displayOptions: { show: { resource: ['runway'], operation: ['getFeatures'] } },
 	},
+
+	// videoUpscale (Topaz)
+	{
+		displayName: 'Video Asset ID',
+		name: 'rwUpscaleVideoAssetId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Runway video asset id to upscale (Topaz 4K, up to 40s)',
+		displayOptions: { show: { resource: ['runway'], operation: ['videoUpscale'] } },
+	},
+	{
+		displayName: 'Explore Mode',
+		name: 'rwUpscaleExploreMode',
+		type: 'boolean',
+		default: false,
+		displayOptions: { show: { resource: ['runway'], operation: ['videoUpscale'] } },
+	},
+	{
+		displayName: 'Account Email',
+		name: 'rwUpscaleEmail',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['runway'], operation: ['videoUpscale', 'addAccount'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: { show: { resource: ['runway'], operation: ['videoUpscale'] } },
+	},
+	// addAccount runway
+	{
+		displayName: 'Email',
+		name: 'rwAccountEmail',
+		type: 'string',
+		required: true,
+		default: '',
+		displayOptions: { show: { resource: ['runway'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Use Workspace',
+		name: 'rwUseWorkspace',
+		type: 'string',
+		default: '',
+		description: 'true = auto-select single paid team workspace, or pass a specific team id (July 16 2026)',
+		displayOptions: { show: { resource: ['runway'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Cookies / Token Payload',
+		name: 'rwAccountPayload',
+		type: 'string',
+		default: '',
+		description: 'Account connect payload as required by UseAPI Runway setup',
+		displayOptions: { show: { resource: ['runway'], operation: ['addAccount'] } },
+	},
+
 ];
 
 // ──────────────────────────────────────────────────────────────
@@ -3914,9 +4013,10 @@ export const pixverseFields: INodeProperties[] = [
 			{ name: '540p', value: '540p' },
 			{ name: '720p', value: '720p' },
 			{ name: '1080p', value: '1080p' },
+			{ name: '2160p / 4K (Seedance-2.0)', value: '2160p' },
 		],
 		default: '720p',
-		description: 'Video quality',
+		description: 'Video quality. 2160p is Seedance-2.0 4K (HEVC).',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['createVideo'] } },
 	},
 	{
@@ -4948,6 +5048,56 @@ export const pixverseFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		displayOptions: { show: { resource: ['pixverse'], operation: ['getSpeech'] } },
+	},
+
+
+	// motionControl
+	{
+		displayName: 'Character Image Path/ID',
+		name: 'pvMotionImage',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Character image (frame path / asset id)',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['motionControl'] } },
+	},
+	{
+		displayName: 'Motion Video Path/ID',
+		name: 'pvMotionVideo',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Reference video providing motion',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['motionControl'] } },
+	},
+	{
+		displayName: 'Prompt',
+		name: 'pvMotionPrompt',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['motionControl'] } },
+	},
+	{
+		displayName: 'Account Email',
+		name: 'pvMotionEmail',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['motionControl', 'getMusic', 'listMusicTracks'] } },
+	},
+	{
+		displayName: 'Wait for Completion',
+		name: 'waitForCompletion',
+		type: 'boolean',
+		default: true,
+		displayOptions: { show: { resource: ['pixverse'], operation: ['motionControl'] } },
+	},
+	// getMusic
+	{
+		displayName: 'Music Audio ID',
+		name: 'pvMusicAudioId',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['pixverse'], operation: ['getMusic'] } },
 	},
 
 ];
@@ -5982,13 +6132,38 @@ export const murekaFields: INodeProperties[] = [
 
 	// addAccount (mureka)
 	{
+		displayName: 'Email (Durable Login)',
+		name: 'murekaAccountEmail',
+		type: 'string',
+		default: '',
+		description: 'Mureka email for email+password auth (July 2026). API re-logs in automatically.',
+		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Password',
+		name: 'murekaAccountPassword',
+		type: 'string',
+		typeOptions: { password: true },
+		default: '',
+		description: 'Mureka password (use with email). Preferred durable auth mode.',
+		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
+	},
+	{
 		displayName: 'Token',
 		name: 'murekaAccountToken',
 		type: 'string',
 		typeOptions: { password: true },
-		required: true,
 		default: '',
-		description: 'Mureka auth token',
+		description: 'Mureka session token (legacy token+refresh_token mode)',
+		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
+	},
+	{
+		displayName: 'Refresh Token',
+		name: 'murekaRefreshToken',
+		type: 'string',
+		typeOptions: { password: true },
+		default: '',
+		description: 'Mureka refresh_token (with Token mode)',
 		displayOptions: { show: { resource: ['mureka'], operation: ['addAccount'] } },
 	},
 	{
@@ -6347,6 +6522,12 @@ export const googleFlowOperations: INodeProperties = {
 		{ name: 'Configure Captcha', value: 'configureCaptcha', description: 'Configure captcha provider for an account', action: 'Configure captcha' },
 		{ name: 'List Captcha Providers', value: 'listCaptchaProviders', description: 'List configured captcha providers', action: 'List captcha providers' },
 		{ name: 'Get Captcha Stats', value: 'getCaptchaStats', description: 'Get captcha solving statistics', action: 'Get captcha stats' },
+		{ name: 'Get Asset', value: 'getAsset', description: 'Resolve asset download URL (supports ?raw=true for video bytes)', action: 'Get asset' },
+		{ name: 'Upload Asset', value: 'uploadAsset', description: 'Upload image/video asset to Google Flow', action: 'Upload asset' },
+		{ name: 'Create Character', value: 'createCharacter', description: 'Create a reusable character (1–2 images + optional voice)', action: 'Create character' },
+		{ name: 'List Characters', value: 'listCharacters', description: 'List characters', action: 'List characters' },
+		{ name: 'Create Voice', value: 'createVoice', description: 'Create a custom voice', action: 'Create voice' },
+		{ name: 'List Voices', value: 'listVoices', description: 'List voices', action: 'List voices' },
 	],
 	default: 'generateImage',
 };
@@ -6455,7 +6636,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfImgCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		description: 'Number of captcha retry attempts (1-10)',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['generateImage'] } },
 	},
@@ -6539,7 +6720,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfUpvImgCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['upscaleImage'] } },
 	},
 	{
@@ -6755,7 +6936,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		description: 'Number of captcha retry attempts (1-10)',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['generateVideo'] } },
 	},
@@ -6838,7 +7019,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfConcatCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['concatenateVideos'] } },
 	},
 	{
@@ -6913,7 +7094,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfExtCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		description: 'Number of captcha retry attempts (1-10)',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['extendVideo'] } },
 	},
@@ -6986,7 +7167,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfGifCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['createGif'] } },
 	},
 	{
@@ -7037,7 +7218,7 @@ export const googleFlowFields: INodeProperties[] = [
 		name: 'gfUpvCaptchaRetry',
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 10 },
-		default: 3,
+		default: 5,
 		description: 'Number of captcha retry attempts (1-10)',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['upscaleVideo'] } },
 	},
@@ -7208,6 +7389,72 @@ export const googleFlowFields: INodeProperties[] = [
 		description: 'Captcha provider API key',
 		displayOptions: { show: { resource: ['googleFlow'], operation: ['configureCaptcha'] } },
 	},
+
+	// getAsset
+	{
+		displayName: 'Media Generation ID',
+		name: 'gfMediaGenerationId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'mediaGenerationId from a prior generation or upload',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['getAsset', 'createCharacter'] } },
+	},
+	{
+		displayName: 'Raw Stream (?raw=true)',
+		name: 'gfAssetRaw',
+		type: 'boolean',
+		default: false,
+		description: 'When true, streams video bytes through useapi.net instead of returning a Google link (July 27 2026). Video only.',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['getAsset'] } },
+	},
+	// uploadAsset
+	{
+		displayName: 'Email',
+		name: 'gfUploadEmail',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['uploadAsset', 'createCharacter', 'createVoice', 'listCharacters', 'listVoices'] } },
+	},
+	{
+		displayName: 'Binary Property',
+		name: 'binaryPropertyName',
+		type: 'string',
+		default: 'data',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['uploadAsset', 'createVoice'] } },
+	},
+	// createCharacter
+	{
+		displayName: 'Character Name',
+		name: 'gfCharacterName',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['createCharacter'] } },
+	},
+	{
+		displayName: 'Image Media IDs (1–2)',
+		name: 'gfCharacterImages',
+		type: 'string',
+		default: '',
+		description: 'Comma-separated mediaGenerationIds for character images',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['createCharacter'] } },
+	},
+	{
+		displayName: 'Voice Ref (Optional)',
+		name: 'gfCharacterVoice',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['createCharacter'] } },
+	},
+	// createVoice
+	{
+		displayName: 'Voice Name',
+		name: 'gfVoiceName',
+		type: 'string',
+		default: '',
+		displayOptions: { show: { resource: ['googleFlow'], operation: ['createVoice'] } },
+	},
+
 ];
 
 // ──────────────────────────────────────────────────────────────

@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 Format: [Semantic Versioning](https://semver.org/)
 
+## [1.0.0] - 2026-08-08
+### Added
+- README fully synced to Aug 2026 UseAPI.net surface (Flow Music, Hailuo-3.0, Seedance-2.5, PixVerse speech/music)
+- E2E verification against live Google Flow accounts + `nano-banana-2-lite` image generation
+
+### Changed
+- Stable 1.0.0 release line for n8n community install
+- Flow Music account connect uses `refresh_token`; download uses `id`; edit uses `clip`
+
+### Verified
+- `npm test` (56+ unit tests) + `npm run build` green
+- Live GET `/v1/google-flow/accounts` → 200
+- Live POST `/v1/google-flow/images` model `nano-banana-2-lite` count=1 → 200 with media URL
+
+
 ## [0.9.0] - 2026-08-08
 ### Added
 - **Flow Music** resource (`/v1/flowmusic`): create/edit/lyrics/list/download, files, jobs, accounts, usage
