@@ -284,4 +284,23 @@ describe('UseApi node — Aug 2026 model catalogs', () => {
 		const ops = operationsFor('pixverse');
 		expect(ops).toEqual(expect.arrayContaining(['createSpeech', 'createMusic']));
 	});
+
+	it('runway includes seedance-2 family and videoUpscale', () => {
+		const vals = modelValues('runway', 'createVideo');
+		expect(vals).toEqual(expect.arrayContaining(['seedance-2', 'seedance-2-fast', 'grok-imagine-1.5', 'happyhorse-1.0']));
+		expect(operationsFor('runway')).toContain('videoUpscale');
+	});
+
+	it('kling supports passToken field and turbo model', () => {
+		expect(modelValues('kling', 'textToVideo')).toContain('kling-v3-0-turbo');
+		expect(allProperties.some((p) => p.name === 'klingPassToken')).toBe(true);
+	});
+
+	it('googleFlow exposes getAsset and characters/voices helpers', () => {
+		expect(operationsFor('googleFlow')).toEqual(expect.arrayContaining(['getAsset', 'createCharacter', 'listVoices']));
+	});
+
+	it('pixverse exposes motionControl and music get/list', () => {
+		expect(operationsFor('pixverse')).toEqual(expect.arrayContaining(['motionControl', 'getMusic', 'listMusicTracks']));
+	});
 });

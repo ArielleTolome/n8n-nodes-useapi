@@ -19,6 +19,20 @@ Format: [Semantic Versioning](https://semver.org/)
 - Live POST `/v1/google-flow/images` model `nano-banana-2-lite` count=1 → 200 with media URL
 
 
+## [1.0.1] - 2026-08-08
+### Added (changelog gap-fill vs https://useapi.net/docs/changelog)
+- **Runway** models: `seedance-2`, `seedance-2-fast`, `grok-imagine-1.5`, `happyhorse-1.0`, Kling O3 (pro/standard/4k), `kling-3.0-motion-control`; image `gpt-image-2` + aspect `auto`
+- **Runway** `videoUpscale` (Topaz 4K) + `addAccount` with `useWorkspace` (team billing)
+- **Kling** `passToken`/`did`/`userId` account connect (login slider captcha); `kling-v3-0-turbo` model
+- **Mureka** durable `email`+`password` account connect (+ refresh_token mode)
+- **Google Flow** `getAsset` with `?raw=true`, upload asset, characters + voices CRUD helpers
+- **PixVerse** `motionControl`, music get/list, Seedance `2160p` quality tier
+- Captcha retry defaults raised toward UseAPI’s 5-attempt default for Flow fields
+
+### Verified
+- Full audit against official UseAPI changelog through Aug 7 2026
+- `npm run build` + 56 unit tests passing
+
 ## [0.9.0] - 2026-08-08
 ### Added
 - **Flow Music** resource (`/v1/flowmusic`): create/edit/lyrics/list/download, files, jobs, accounts, usage

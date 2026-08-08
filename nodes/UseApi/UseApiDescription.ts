@@ -1,7 +1,4 @@
-
-		{ name: 'Motion Control', value: 'motionControl', description: 'Drive a character image with motion from a reference video', action: 'Motion control' },
-		{ name: 'Get Music', value: 'getMusic', description: 'Get a music track by audio_id', action: 'Get music' },
-		{ name: 'List Music', value: 'listMusicTracks', description: 'List generated music tracks', action: 'List music tracks' },import type { INodeProperties } from 'n8n-workflow';
+import type { INodeProperties } from 'n8n-workflow';
 
 // ──────────────────────────────────────────────────────────────
 // Resource selector
@@ -2919,6 +2916,7 @@ export const runwayFields: INodeProperties[] = [
 		name: 'ratio',
 		type: 'options',
 		options: [
+			{ name: 'Auto (Nano Banana default)', value: 'auto' },
 			{ name: '1:1', value: '1:1' },
 			{ name: '16:9', value: '16:9' },
 			{ name: '9:16', value: '9:16' },
@@ -2928,7 +2926,7 @@ export const runwayFields: INodeProperties[] = [
 			{ name: '2:3', value: '2:3' },
 			{ name: '21:9', value: '21:9' },
 		],
-		default: '16:9',
+		default: 'auto',
 		description: 'Image aspect ratio',
 		displayOptions: { show: { resource: ['runway'], operation: ['createImage'] } },
 	},
@@ -3922,6 +3920,9 @@ export const pixverseOperations: INodeProperties = {
 		{ name: 'List Videos', value: 'listVideos', description: 'List generated videos', action: 'List videos' },
 		{ name: 'Create Music', value: 'createMusic', description: 'Generate music (music-2.6 / music-v1 / lyria-3-pro-preview)', action: 'Create music' },
 		{ name: 'Create Speech', value: 'createSpeech', description: 'Text-to-speech (MiniMax / ElevenLabs voices)', action: 'Create speech' },
+		{ name: 'Motion Control', value: 'motionControl', description: 'Drive a character image with motion from a reference video', action: 'Motion control' },
+		{ name: 'Get Music', value: 'getMusic', description: 'Get a music track by audio_id', action: 'Get music' },
+		{ name: 'List Music', value: 'listMusicTracks', description: 'List generated music tracks', action: 'List music tracks' },
 		{ name: 'List Speech Voices', value: 'listSpeechVoices', description: 'List TTS voices', action: 'List speech voices' },
 		{ name: 'List Speech Models', value: 'listSpeechModels', description: 'List TTS models', action: 'List speech models' },
 		{ name: 'Get Speech', value: 'getSpeech', description: 'Get a speech clip by audio_id', action: 'Get speech' },

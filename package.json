@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-useapi-net",
-  "version": "1.0.0",
-  "description": "n8n community nodes for useapi.net v1 — Google Flow, Flow Music, MiniMax Hailuo-3.0/Seedance, Dreamina seedance-2.5, PixVerse music/speech, Runway, Kling, Mureka, TemPolor",
+  "version": "1.0.1",
+  "description": "n8n community nodes for useapi.net v1 \u2014 Google Flow, Flow Music, MiniMax Hailuo-3.0/Seedance, Dreamina seedance-2.5, PixVerse music/speech, Runway, Kling, Mureka, TemPolor",
   "keywords": [
     "n8n-community-node-package",
     "n8n",

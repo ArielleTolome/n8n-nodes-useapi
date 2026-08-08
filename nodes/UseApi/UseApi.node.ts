@@ -2656,7 +2656,6 @@ async function executeMureka(
 		if (maxJobs) body.maxJobs = maxJobs;
 		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
 	}
-	}
 
 	if (operation === 'getAccount') {
 		const account = this.getNodeParameter('murekaAccountId', i) as string;
