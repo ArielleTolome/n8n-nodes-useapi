@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 Format: [Semantic Versioning](https://semver.org/)
 
+## [0.9.0] - 2026-08-08
+### Added
+- **Flow Music** resource (`/v1/flowmusic`): create/edit/lyrics/list/download, files, jobs, accounts, usage
+- **PixVerse** `createMusic` + full **speech** ops (create/list/get/voices/models)
+- Expanded unit tests for Aug 2026 model catalogs + new resources
+- `User-Agent` on outbound UseAPI requests (Cloudflare 1010 mitigation)
+
+### Verified
+- Live E2E: Google Flow `nano-banana-2-lite` 9:16 still → HTTP 200 with media URL
+- `npm run build` + 56 unit tests passing
+
+## [0.8.0] - 2026-08-08
+### Added
+- **Flow Music** resource (`/v1/flowmusic`): create/edit/lyrics/list/download, files upload, jobs, accounts, usage
+- **PixVerse speech** ops: createSpeech, listSpeechVoices, listSpeechModels, getSpeech, listSpeech
+- **PixVerse music** createMusic (`music-2.6`, `music-v1`, `lyria-3-pro-preview`)
+- MiniMax **Hailuo-3.0** + **Seedance-2.0/Fast/Mini** models with resolution/duration/options/aspectRatio and omni fileID/video/audio refs
+- Google Flow **nano-banana-2-lite** (default), **veo-3.1-lite**, **omni-flash**; correct `aspectRatio`/`count` request fields; reference_1..10 helpers
+- Dreamina **seedance-2.5** (up to 30s), seedance-2.0-fast/mini, video resolution + omni image/video/audio refs, seedream-4.7
+- PixVerse/Runway latest image & video model catalogs (Seedance, Nano Banana 2 Lite, v6, etc.)
+- User-Agent header on API requests (avoids Cloudflare 1010 blocks)
+
+### Changed
+- Default resource is now **Google Flow** (Midjourney marked discontinued as of 2026-06-24)
+- MiniMax createVideo maps to official UseAPI body shape (`fileID`, `options`, `aspectRatio`, independent `resolution`/`duration`)
+
+### Fixed
+- Google Flow image/video parameter naming (`aspectRatio`, `count`) to match live API
+
 ## [0.8.0] - 2026-08-08
 ### Changed
 - Default resource is now **Google Flow** (Midjourney labeled discontinued June 24 2026)

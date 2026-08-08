@@ -30,6 +30,8 @@ import {
 	murekaFields,
 	temporlorOperations,
 	temporlorFields,
+	flowMusicOperations,
+	flowMusicFields,
 } from './UseApiDescription';
 
 export class UseApi implements INodeType {
@@ -64,6 +66,7 @@ export class UseApi implements INodeType {
 			googleFlowOperations,
 			murekaOperations,
 			temporlorOperations,
+			flowMusicOperations,
 			// Fields
 			...midjourneyFields,
 			...dreaminaFields,
@@ -75,6 +78,7 @@ export class UseApi implements INodeType {
 			...googleFlowFields,
 			...murekaFields,
 			...temporlorFields,
+			...flowMusicFields,
 		],
 	};
 
@@ -118,6 +122,9 @@ export class UseApi implements INodeType {
 						break;
 					case 'tempolor':
 						responseData = await executeTempolor.call(this, operation, i);
+						break;
+					case 'flowMusic':
+						responseData = await executeFlowMusic.call(this, operation, i);
 						break;
 					default:
 						throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
@@ -1865,6 +1872,86 @@ async function executePixverse(
 		return await useApiRequest.call(this, 'GET', `${basePath}/videos`, {}, qs);
 	}
 
+	if (operation === 'createMusic') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('pvMusicPrompt', i) as string,
+			model: this.getNodeParameter('pvMusicModel', i) as string,
+		};
+		const lyrics = this.getNodeParameter('pvMusicLyrics', i, '') as string;
+		if (lyrics) body.lyrics = lyrics;
+		if (this.getNodeParameter('pvMusicInstrumental', i, false) as boolean) body.instrumental = true;
+		const email = this.getNodeParameter('pvMusicEmail', i, '') as string;
+		if (email) body.email = email;
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/music/create`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const id = (response as any).audio_id || (response as any).music_id || (response as any).id;
+		if (wait && id) {
+			const start = Date.now();
+			while (Date.now() - start < 600000) {
+				const poll = await useApiRequest.call(this, 'GET', `${basePath}/music/${id}`);
+				if ((poll as any).audio_status_final === true) return poll;
+				await new Promise((r) => setTimeout(r, 3000));
+			}
+			throw new NodeOperationError(this.getNode(), 'PixVerse music polling timed out');
+		}
+		return response;
+	}
+
+	if (operation === 'createSpeech') {
+		const body: Record<string, any> = {
+			text: this.getNodeParameter('pvSpeechText', i) as string,
+			model: this.getNodeParameter('pvSpeechModel', i) as string,
+			voice_id: this.getNodeParameter('pvSpeechVoiceId', i) as string,
+		};
+		const emotion = this.getNodeParameter('pvSpeechEmotion', i, '') as string;
+		if (emotion && emotion !== 'auto') body.emotion = emotion;
+		const email = this.getNodeParameter('pvSpeechEmail', i, '') as string;
+		if (email) body.email = email;
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/speech/create`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const id = (response as any).audio_id || (response as any).id;
+		if (wait && id) {
+			const start = Date.now();
+			while (Date.now() - start < 300000) {
+				const poll = await useApiRequest.call(this, 'GET', `${basePath}/speech/${id}`);
+				if ((poll as any).audio_status_final === true) return poll;
+				const status = (poll as any).audio_status_name || (poll as any).status;
+				if (status === 'failed' || status === 'error' || status === 'FAILED') {
+					throw new NodeOperationError(this.getNode(), `PixVerse speech failed: ${JSON.stringify(poll)}`);
+				}
+				await new Promise((r) => setTimeout(r, 3000));
+			}
+			throw new NodeOperationError(this.getNode(), 'PixVerse speech polling timed out');
+		}
+		return response;
+	}
+
+	if (operation === 'listSpeechVoices') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvSpeechEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/speech/voices`, {}, qs);
+	}
+
+	if (operation === 'listSpeechModels') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvSpeechEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/speech/models`, {}, qs);
+	}
+
+	if (operation === 'getSpeech') {
+		const id = this.getNodeParameter('pvSpeechAudioId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/speech/${id}`);
+	}
+
+	if (operation === 'listSpeech') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('pvSpeechEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/speech`, {}, qs);
+	}
+
 	throw new NodeOperationError(this.getNode(), `Unknown PixVerse operation: ${operation}`, {
 		itemIndex: i,
 	});
@@ -2669,6 +2756,152 @@ async function executeTempolor(
 	}
 
 	throw new NodeOperationError(this.getNode(), `Unknown TemPolor operation: ${operation}`, {
+		itemIndex: i,
+	});
+}
+
+// ──────────────────────────────────────────────────────────────
+// Flow Music
+// ──────────────────────────────────────────────────────────────
+
+async function executeFlowMusic(
+	this: IExecuteFunctions,
+	operation: string,
+	i: number,
+): Promise<any> {
+	const basePath = '/v1/flowmusic';
+
+	if (operation === 'createMusic') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('fmPrompt', i) as string,
+		};
+		const lyrics = this.getNodeParameter('fmLyrics', i, '') as string;
+		if (lyrics) body.lyrics = lyrics;
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) body.email = email;
+		addOptionalField(this, body, 'fmReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'fmReplyRef', i, 'replyRef');
+		// Prefer async mode for n8n short HTTP timeouts; fmAsync true → mode=async
+		const asyncMode = this.getNodeParameter('fmAsync', i, false) as boolean;
+		body.mode = asyncMode ? 'async' : 'async';
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/music`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const jobid = (response as any).jobid || (response as any).jobId;
+		if (wait && jobid) {
+			return await waitForJob.call(this, `${basePath}/jobs/${jobid}`);
+		}
+		return response;
+	}
+
+	if (operation === 'editMusic') {
+		const body: Record<string, any> = {
+			// API expects encoded clip asset id as `clip`
+			clip: this.getNodeParameter('fmMusicId', i) as string,
+			operation: 'cover',
+		};
+		const prompt = this.getNodeParameter('fmPrompt', i, '') as string;
+		if (prompt) {
+			body.instruction = prompt;
+			body.prompt = prompt;
+		}
+		const lyrics = this.getNodeParameter('fmLyrics', i, '') as string;
+		if (lyrics) {
+			body.lyrics = lyrics;
+			body.operation = 'remix';
+		}
+		addOptionalField(this, body, 'fmReplyUrl', i, 'replyUrl');
+		addOptionalField(this, body, 'fmReplyRef', i, 'replyRef');
+		body.mode = 'async';
+		const response = await useApiRequest.call(this, 'POST', `${basePath}/music/edit`, body);
+		const wait = this.getNodeParameter('waitForCompletion', i, true) as boolean;
+		const jobid = (response as any).jobid || (response as any).jobId;
+		if (wait && jobid) {
+			return await waitForJob.call(this, `${basePath}/jobs/${jobid}`);
+		}
+		return response;
+	}
+
+	if (operation === 'generateLyrics') {
+		const body: Record<string, any> = {
+			prompt: this.getNodeParameter('fmPrompt', i) as string,
+		};
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) body.email = email;
+		return await useApiRequest.call(this, 'POST', `${basePath}/music/lyrics`, body);
+	}
+
+	if (operation === 'listMusic') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/music`, {}, qs);
+	}
+
+	if (operation === 'downloadMusic') {
+		const qs: Record<string, any> = {
+			id: this.getNodeParameter('fmMusicId', i) as string,
+			format: this.getNodeParameter('fmFormat', i, 'mp3') as string,
+		};
+		return await useApiRequest.call(this, 'GET', `${basePath}/music/download`, {}, qs);
+	}
+
+	if (operation === 'uploadFile') {
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i, 'data') as string;
+		const qs: IDataObject = {};
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiBinaryUpload.call(this, `${basePath}/files`, binaryPropertyName, i, qs);
+	}
+
+	if (operation === 'getJob') {
+		const jobid = this.getNodeParameter('fmJobId', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/jobs/${jobid}`);
+	}
+
+	if (operation === 'listJobs') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/jobs`, {}, qs);
+	}
+
+	if (operation === 'cancelJob') {
+		const jobid = this.getNodeParameter('fmJobId', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/jobs/${jobid}`);
+	}
+
+	if (operation === 'addAccount') {
+		const body: Record<string, any> = {};
+		// Accept refresh_token (preferred) or legacy cookies field value as refresh_token
+		const tokenOrCookies = this.getNodeParameter('fmCookies', i, '') as string;
+		if (tokenOrCookies) body.refresh_token = tokenOrCookies;
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) body.email = email;
+		return await useApiRequest.call(this, 'POST', `${basePath}/accounts`, body);
+	}
+
+	if (operation === 'getAccount') {
+		const email = this.getNodeParameter('fmEmail', i) as string;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/${email}`);
+	}
+
+	if (operation === 'listAccounts') {
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts`);
+	}
+
+	if (operation === 'deleteAccount') {
+		const email = this.getNodeParameter('fmEmail', i) as string;
+		return await useApiRequest.call(this, 'DELETE', `${basePath}/accounts/${email}`);
+	}
+
+	if (operation === 'accountUsage') {
+		const qs: Record<string, any> = {};
+		const email = this.getNodeParameter('fmEmail', i, '') as string;
+		if (email) qs.email = email;
+		return await useApiRequest.call(this, 'GET', `${basePath}/accounts/usage`, {}, qs);
+	}
+
+	throw new NodeOperationError(this.getNode(), `Unknown Flow Music operation: ${operation}`, {
 		itemIndex: i,
 	});
 }

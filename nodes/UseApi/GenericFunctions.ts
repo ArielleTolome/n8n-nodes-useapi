@@ -92,6 +92,7 @@ export async function useApiBinaryUpload(
 			headers: {
 				Authorization: `Bearer ${credentials.apiToken}`,
 				'Content-Type': binaryData.mimeType || 'application/octet-stream',
+				'User-Agent': 'n8n-nodes-useapi-net/1.0',
 			},
 			body: buffer,
 		})) as IDataObject;
@@ -125,6 +126,7 @@ export async function useApiRequest(
 		headers: {
 			Authorization: `Bearer ${credentials.apiToken}`,
 			'Content-Type': 'application/json',
+			'User-Agent': 'n8n-nodes-useapi-net/1.0',
 		},
 		qs,
 		body,

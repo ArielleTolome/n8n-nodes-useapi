@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-useapi-net",
-  "version": "0.8.0",
-  "description": "n8n community nodes for useapi.net - AI generation (Google Flow, Dreamina, MiniMax Hailuo-3.0/Seedance, PixVerse, Runway, Kling, Mureka, TemPolor, Flow Music, Midjourney discontinued)",
+  "version": "0.9.0",
+  "description": "n8n community nodes for useapi.net - AI generation (Google Flow/Veo/Nano Banana, MiniMax Hailuo-3.0/Seedance, Dreamina, PixVerse, Kling, Runway, Flow Music, Mureka, TemPolor, InsightFaceSwap)",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -52,7 +52,9 @@
     "generative-ai",
     "stable-diffusion",
     "flux",
-    "sora"
+    "sora",
+    "nano-banana-2-lite",
+    "veo-3.1"
   ],
   "license": "MIT",
   "homepage": "https://github.com/ArielleTolome/n8n-nodes-useapi#readme",

@@ -59,9 +59,11 @@ describe('UseApi node', () => {
 		);
 		const options = resourceProp?.options as Array<{ value: string }>;
 		const resourceValues = options.map((o) => o.value);
-		// At minimum, Midjourney and Dreamina should be present
-		expect(resourceValues).toContain('midjourney');
+		expect(resourceValues).toContain('googleFlow');
+		expect(resourceValues).toContain('minimax');
 		expect(resourceValues).toContain('dreamina');
+		expect(resourceValues).toContain('flowMusic');
+		expect(resourceValues).toContain('midjourney'); // discontinued but retained
 	});
 
 	it('has inputs and outputs defined', () => {
@@ -101,7 +103,7 @@ describe('UseApi node — resource and operation coverage', () => {
 			.flatMap((p) => (p.options as Array<{ value: string }>)?.map((o) => o.value) ?? []);
 	}
 
-	const expectedResources = ['midjourney', 'dreamina', 'kling', 'runway', 'minimax', 'tempolor'];
+	const expectedResources = ['googleFlow', 'flowMusic', 'midjourney', 'dreamina', 'kling', 'runway', 'minimax', 'tempolor', 'pixverse'];
 
 	it.each(expectedResources)(
 		'resource "%s" exists in the resource dropdown',
@@ -217,5 +219,69 @@ describe('UseApi node — credentials', () => {
 		const creds = node.description.credentials as Array<{ name: string; required?: boolean }>;
 		const cred = creds.find((c) => c.name === 'useApiCredentials');
 		expect(cred?.required).toBe(true);
+	});
+});
+
+
+// ---------------------------------------------------------------------------
+// Latest UseAPI model catalog (Aug 2026)
+// ---------------------------------------------------------------------------
+
+describe('UseApi node — Aug 2026 model catalogs', () => {
+	let allProperties: import('n8n-workflow').INodeProperties[];
+
+	beforeEach(() => {
+		allProperties = new (require('../nodes/UseApi/UseApi.node').UseApi)().description
+			.properties as import('n8n-workflow').INodeProperties[];
+	});
+
+	function modelValues(resource: string, operation: string): string[] {
+		return allProperties
+			.filter(
+				(p) =>
+					(p.name === 'model' || p.name === 'pvFusionModel' || p.name === 'pvMusicModel' || p.name === 'pvSpeechModel') &&
+					(p.displayOptions?.show as Record<string, string[]> | undefined)?.resource?.includes(resource) &&
+					(p.displayOptions?.show as Record<string, string[]> | undefined)?.operation?.includes(operation),
+			)
+			.flatMap((p) => (p.options as Array<{ value: string }>)?.map((o) => o.value) ?? []);
+	}
+
+	function operationsFor(resource: string): string[] {
+		return allProperties
+			.filter(
+				(p) =>
+					p.name === 'operation' &&
+					(p.displayOptions?.show as Record<string, string[]> | undefined)?.resource?.includes(resource),
+			)
+			.flatMap((p) => (p.options as Array<{ value: string }>)?.map((o) => o.value) ?? []);
+	}
+
+	it('minimax createVideo includes Hailuo-3.0 and Seedance-2.0 family', () => {
+		const vals = modelValues('minimax', 'createVideo');
+		expect(vals).toEqual(expect.arrayContaining(['Hailuo-3.0', 'Seedance-2.0', 'Seedance-2.0-Fast', 'Seedance-2.0-Mini']));
+	});
+
+	it('googleFlow images default catalog includes nano-banana-2-lite', () => {
+		const vals = modelValues('googleFlow', 'generateImage');
+		expect(vals).toEqual(expect.arrayContaining(['nano-banana-2-lite', 'nano-banana-2', 'nano-banana-pro']));
+	});
+
+	it('googleFlow videos include lite + omni-flash', () => {
+		const vals = modelValues('googleFlow', 'generateVideo');
+		expect(vals).toEqual(expect.arrayContaining(['veo-3.1-fast', 'veo-3.1-lite', 'omni-flash']));
+	});
+
+	it('dreamina videos include seedance-2.5', () => {
+		const vals = modelValues('dreamina', 'generateVideo');
+		expect(vals).toContain('seedance-2.5');
+	});
+
+	it('flowMusic resource exposes createMusic', () => {
+		expect(operationsFor('flowMusic')).toContain('createMusic');
+	});
+
+	it('pixverse exposes createSpeech and createMusic', () => {
+		const ops = operationsFor('pixverse');
+		expect(ops).toEqual(expect.arrayContaining(['createSpeech', 'createMusic']));
 	});
 });

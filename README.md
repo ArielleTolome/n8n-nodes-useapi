@@ -1,6 +1,6 @@
 # n8n-nodes-useapi
 
-n8n community nodes for [useapi.net](https://useapi.net) — a unified REST API for AI video, image, music, and creative services including Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Mureka, and TemPolor.
+n8n community nodes for [useapi.net](https://useapi.net) — a unified REST API for AI video, image, music, and creative services including Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Flow Music, Mureka, and TemPolor.
 
 > **Note:** The npm package name `n8n-nodes-useapi` is taken by an unrelated package. Install from GitHub (see below).
 
