@@ -41,7 +41,7 @@ export class UseApi implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description:
-			'Interact with AI services via useapi.net (Midjourney, Dreamina, Kling, Runway, PixVerse, MiniMax, InsightFaceSwap, Google Flow, Mureka, TemPolor)',
+			'Interact with AI services via useapi.net (Google Flow, Flow Music, Dreamina, MiniMax, PixVerse, Runway, Kling, Mureka, TemPolor, InsightFaceSwap, Midjourney discontinued)',
 		defaults: { name: 'UseAPI' },
 		inputs: ['main'],
 		outputs: ['main'],
@@ -481,8 +481,31 @@ async function executeDreamina(
 			ratio: this.getNodeParameter('ratio', i) as string,
 			duration: this.getNodeParameter('duration', i) as number,
 		};
+		const res = this.getNodeParameter('dreaminaVideoResolution', i, '') as string;
+		if (res) body.resolution = res;
 		addOptionalField(this, body, 'firstFrameRef', i);
 		addOptionalField(this, body, 'endFrameRef', i);
+		const omniImg = (this.getNodeParameter('dreaminaOmniImageRefs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		omniImg.forEach((id, idx) => {
+			body[`omni_${idx + 1}_imageRef`] = id;
+		});
+		const omniVid = (this.getNodeParameter('dreaminaOmniVideoRefs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		omniVid.forEach((id, idx) => {
+			body[`omni_${idx + 1}_videoRef`] = id;
+		});
+		const omniAud = (this.getNodeParameter('dreaminaOmniAudioRefs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		omniAud.forEach((id, idx) => {
+			body[`omni_${idx + 1}_audioRef`] = id;
+		});
 		addOptionalNumber(this, body, 'dreaminaVideoSeed', i, 'seed');
 		addOptionalField(this, body, 'account', i);
 		addOptionalBool(this, body, 'dreaminaVideoAsync', i, 'async');
@@ -1862,10 +1885,47 @@ async function executeMinimax(
 		const body: Record<string, any> = {
 			prompt: this.getNodeParameter('prompt', i) as string,
 			model: this.getNodeParameter('model', i) as string,
-			resolution: this.getNodeParameter('resolution', i) as string,
-			duration: this.getNodeParameter('duration', i) as number,
 		};
-		addOptionalField(this, body, 'image_url', i);
+		const resolution = this.getNodeParameter('resolution', i, '') as string;
+		if (resolution) body.resolution = resolution;
+		const duration = this.getNodeParameter('duration', i, 0) as number;
+		if (duration) body.duration = duration;
+		const mmOptions = this.getNodeParameter('mmOptions', i, '') as string;
+		if (mmOptions) body.options = mmOptions;
+		const aspectRatio = this.getNodeParameter('mmAspectRatio', i, '') as string;
+		if (aspectRatio) body.aspectRatio = aspectRatio;
+		const mmFileID = this.getNodeParameter('mmFileID', i, '') as string;
+		const imageUrl = this.getNodeParameter('image_url', i, '') as string;
+		if (mmFileID) {
+			body.fileID = mmFileID;
+		} else if (imageUrl) {
+			// Prefer fileID when value looks like an uploaded file id; else pass image_url
+			if (/^https?:\/\//i.test(imageUrl)) body.image_url = imageUrl;
+			else body.fileID = imageUrl;
+		}
+		const endFrame = this.getNodeParameter('mmEndFrameFileID', i, '') as string;
+		if (endFrame) body.end_frame_fileID = endFrame;
+		const extraFiles = (this.getNodeParameter('mmFileIDsExtra', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		extraFiles.forEach((id, idx) => {
+			if (idx < 8) body[`fileID${idx + 2}`] = id;
+		});
+		const videoFiles = (this.getNodeParameter('mmVideoFileIDs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		videoFiles.forEach((id, idx) => {
+			if (idx < 3) body[`videoFileID${idx + 1}`] = id;
+		});
+		const audioFiles = (this.getNodeParameter('mmAudioFileIDs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		audioFiles.forEach((id, idx) => {
+			if (idx < 3) body[`audioFileID${idx + 1}`] = id;
+		});
 		addOptionalField(this, body, 'end_image_url', i);
 		addOptionalField(this, body, 'account', i);
 		addOptionalNumber(this, body, 'seed', i);
@@ -2048,8 +2108,18 @@ async function executeGoogleFlow(
 			prompt: this.getNodeParameter('prompt', i) as string,
 		};
 		addOptionalField(this, body, 'model', i);
-		addOptionalField(this, body, 'aspect_ratio', i);
-		addOptionalNumber(this, body, 'image_count', i);
+		const aspect = this.getNodeParameter('aspect_ratio', i, '') as string;
+		if (aspect && aspect !== 'auto') body.aspectRatio = aspect;
+		else if (aspect === 'auto') body.aspectRatio = 'auto';
+		const count = this.getNodeParameter('image_count', i, 0) as number;
+		if (count) body.count = count;
+		const refs = (this.getNodeParameter('gfImgRefs', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		refs.slice(0, 10).forEach((id, idx) => {
+			body[`reference_${idx + 1}`] = id;
+		});
 		addOptionalField(this, body, 'account', i);
 		addOptionalField(this, body, 'gfImgReplyUrl', i, 'replyUrl');
 		addOptionalField(this, body, 'replyRef', i);
@@ -2079,7 +2149,10 @@ async function executeGoogleFlow(
 			prompt: this.getNodeParameter('prompt', i) as string,
 			model: this.getNodeParameter('model', i) as string,
 		};
-		addOptionalField(this, body, 'aspect_ratio', i);
+		const ar = this.getNodeParameter('aspect_ratio', i, '') as string;
+		if (ar === '16:9' || ar === 'landscape') body.aspectRatio = 'landscape';
+		else if (ar === '9:16' || ar === 'portrait') body.aspectRatio = 'portrait';
+		else if (ar) body.aspectRatio = ar;
 		addOptionalNumber(this, body, 'gfVideoDuration', i, 'duration');
 		// referenceUrls collection is intentionally omitted — individual referenceImage_1/2/3 fields are used below
 		addOptionalField(this, body, 'account', i);
@@ -2094,6 +2167,29 @@ async function executeGoogleFlow(
 		addOptionalField(this, body, 'gfRefImage1', i, 'referenceImage_1');
 		addOptionalField(this, body, 'gfRefImage2', i, 'referenceImage_2');
 		addOptionalField(this, body, 'gfRefImage3', i, 'referenceImage_3');
+		const refImgs = (this.getNodeParameter('gfVideoRefImages', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		refImgs.slice(0, 7).forEach((id, idx) => {
+			body[`referenceImage_${idx + 1}`] = id;
+		});
+		const refVid = this.getNodeParameter('gfVideoRefVideo', i, '') as string;
+		if (refVid) body.referenceVideo_1 = refVid;
+		const refAud = (this.getNodeParameter('gfVideoRefAudio', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		refAud.slice(0, 5).forEach((id, idx) => {
+			body[`referenceAudio_${idx + 1}`] = id;
+		});
+		const chars = (this.getNodeParameter('gfVideoCharacters', i, '') as string)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		chars.slice(0, 7).forEach((id, idx) => {
+			body[`character_${idx + 1}`] = id;
+		});
 		addOptionalField(this, body, 'gfCaptchaToken', i, 'captchaToken');
 		addOptionalNumber(this, body, 'gfCaptchaRetry', i, 'captchaRetry');
 		addOptionalField(this, body, 'gfCaptchaOrder', i, 'captchaOrder');

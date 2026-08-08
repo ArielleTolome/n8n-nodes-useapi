@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 Format: [Semantic Versioning](https://semver.org/)
 
+## [0.8.0] - 2026-08-08
+### Changed
+- Default resource is now **Google Flow** (Midjourney labeled discontinued June 24 2026)
+- **MiniMax** video models: `Hailuo-3.0`, `Seedance-2.0` / Fast / Mini, correct IDs (`02`, `T2V-2.3`, `Veo-3.1`, `Sora-2`)
+- MiniMax createVideo mapping: `fileID`, `end_frame_fileID`, `fileID2-9`, `videoFileID1-3`, `audioFileID1-3`, `options`, `aspectRatio`; resolution/duration only when set
+- **Google Flow** images: `nano-banana-2-lite` default; API fields `aspectRatio`, `count`, `reference_1..10`
+- Google Flow videos: `veo-3.1-lite`, `veo-3.1-lite-low-priority`, `omni-flash`; landscape/portrait; multi-modal refs
+- **Dreamina** video: `seedance-2.5` default (up to 30s), fast/mini, resolution, omni refs; image `seedream-4.7`
+- **PixVerse** video catalog (v6 + Seedance/Kling/Veo/Sora/etc.), images seedream-5.0-pro/lite + nano-banana-2-lite; fusion Seedance
+- **Runway** image default `nano-banana-2-lite`
+
 ## [0.5.9] - 2026-03-17
 ### Validated
 - All 5 example workflow JSON files confirmed valid for n8n import (correct types, required fields, proper UUIDs)
